@@ -505,3 +505,22 @@ mark.aux { box-shadow: inset 0 -1.5px 0 var(--verdigris); }
 .conj-rule { font-family: var(--font-head); font-style: italic; font-size: .92rem; }
 .conj-group { font-family: var(--font-head); font-style: italic; font-size: .95rem; border-color: var(--rule); }
 .conj-legend { font-family: var(--font-head); font-size: .95rem; }
+
+/* verbs list + test, in the painting's hand */
+.v-tag { font-family: var(--font-head); font-style: italic; font-size: .8rem; }
+.v-tag.irr { background: linear-gradient(transparent 10%, rgba(201, 162, 74, .5) 10%, rgba(201, 162, 74, .5) 92%, transparent 92%); color: var(--umber); }
+.v-tag.spell { border-color: var(--rule); }
+.verb-list li.vk-irr button { box-shadow: inset 2px 0 0 var(--ochre); }
+.verb-filter button { font-family: var(--font-head); font-size: .95rem; }
+.ex-kicker, .ex-mention { font-family: var(--font-head); font-style: italic; font-weight: 600; color: var(--madder); }
+.ex-kicker { font-size: 2rem; }
+.ex-mention { font-size: 1.9rem; }
+.ex-big { font-family: var(--font-head); }
+.ex-prompt { font-family: var(--font-head); }
+.ex-rules { font-family: var(--font-head); font-style: italic; font-size: 1.05rem; }
+.ex-group { font-family: var(--font-head); }
+.ex-gbar { background: rgba(168, 137, 90, .25); }
+.ex-gbar i { background: var(--madder); }
+.ex-miss { border-bottom-color: rgba(168, 137, 90, .35); }
+.ex-right { font-family: var(--font-fr); color: var(--umber); }
+.ex-perfect { font-family: var(--font-head); color: var(--verdigris); }

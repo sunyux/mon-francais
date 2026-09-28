@@ -22,7 +22,7 @@
 
   const load = src => new Promise((res, rej) => {
     const s = document.createElement('script');
-    s.src = src + '?v=8'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
+    s.src = src + '?v=9'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
     document.head.appendChild(s);
   });
   meta.scripts.reduce((p, s) => p.then(() => load(s)), Promise.resolve())
@@ -38,6 +38,7 @@
     { id: 'horloge', fr: 'Horloge', zh: '时钟', en: 'Clock', color: '#2e3b5a' },
     { id: 'histoire', fr: 'Histoire', zh: '故事', en: 'Story', color: '#9c5a5e' },
     { id: 'pratique', fr: 'Pratique', zh: '练习', en: 'Practice', color: '#56603a' },
+    { id: 'controle', fr: 'Contrôle', zh: '测试', en: 'Test', color: '#4a3a52' },
   ];
   const chap = cid => CHAPTERS.find(c => c.id === cid);
 
@@ -228,6 +229,15 @@
     ];
     FL.Practice.mount(pr.querySelector('[data-practice]'), { id: d.id, groups: d.groups, sentences, quizExtras: d.quizExtras });
     add('pratique', pr, { wide: true, ownKeys: true });
+
+    /* 9. test: every word of the topic, once (both pages) */
+    const ex = document.createElement('div');
+    ex.className = 'page wide-page';
+    ex.style.setProperty('--chap', chap('controle').color);
+    ex.innerHTML = `<div class="pg-head"><span class="pg-chap" lang="fr">Contrôle</span><span class="pg-book">${B('本主题全部词汇测试', 'A test on every word of this topic')}</span></div>
+      <div class="pg-inner"><div class="exam" data-exam></div></div><div class="pg-foot"></div>`;
+    FL.Exam.mount(ex.querySelector('[data-exam]'), { id: d.id, groups: d.groups });
+    add('controle', ex, { wide: true, ownKeys: true });
 
     // page numbers + verb marking
     pages.forEach((p, i) => {
