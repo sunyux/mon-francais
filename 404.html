@@ -25,9 +25,10 @@
   <link rel="stylesheet" href="assets/css/peinture.css?v=6">
 </head>
 <body>
-  <a class="skip-link" href="#main">Aller au contenu</a>
+  <!-- <base> would send "#main" to the home page, so move focus directly -->
+  <a class="skip-link" href="#main" onclick="document.getElementById('main').focus(); return false;">Aller au contenu</a>
   <header id="site-header"></header>
-  <main id="main">
+  <main id="main" tabindex="-1">
     <article class="lost">
       <p class="pg-chap" lang="fr">Page introuvable</p>
       <h1 lang="fr">Perdue entre deux chapitres</h1>
