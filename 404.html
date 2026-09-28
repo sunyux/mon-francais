@@ -11,10 +11,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <!-- absolute paths: this page is served for any missing URL, at any depth -->
-  <link rel="stylesheet" href="/assets/css/style.css?v=6">
-  <link rel="stylesheet" href="/assets/css/book.css?v=6">
-  <link rel="stylesheet" href="/assets/css/peinture.css?v=6">
+  <!-- this page is served for any missing URL at any depth, so resolve assets from the site root
+       (on GitHub Pages the site lives under /<repo>/) -->
+  <script>
+    (function () {
+      var gh = /\.github\.io$/.test(location.hostname);
+      var root = gh ? '/' + location.pathname.split('/')[1] + '/' : '/';
+      document.write('<base href="' + root + '">');
+    })();
+  </script>
+  <link rel="stylesheet" href="assets/css/style.css?v=6">
+  <link rel="stylesheet" href="assets/css/book.css?v=6">
+  <link rel="stylesheet" href="assets/css/peinture.css?v=6">
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
@@ -25,11 +33,11 @@
       <h1 lang="fr">Perdue entre deux chapitres</h1>
       <p><span lang="fr">Cette page n’existe pas, ou elle a changé de place.</span><br>
         <span class="mean"><span class="zh">这一页不存在，或已被移动。</span><span class="en">This page doesn’t exist or has moved.</span></span></p>
-      <a class="btn primary" href="/index.html">← <span lang="fr">Retour au sommaire</span></a>
+      <a class="btn primary" href="index.html">← <span lang="fr">Retour au sommaire</span></a>
     </article>
   </main>
-  <script src="/assets/js/core.js?v=6"></script>
-  <script src="/assets/js/book.js?v=6"></script>
-  <script>FL.root = '/'; FL.renderHeader('home', '/'); FL.renderRoom();</script>
+  <script src="assets/js/core.js?v=6"></script>
+  <script src="assets/js/book.js?v=6"></script>
+  <script>FL.renderHeader('home'); FL.renderRoom();</script>
 </body>
 </html>
