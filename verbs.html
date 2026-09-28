@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Les verbes · Mon Français</title>
+  <meta name="description" content="Tableaux de conjugaison : présent, passé composé, imparfait et futur simple, avec prononciation.">
+  <meta name="theme-color" content="#140d08">
+  <meta property="og:title" content="Mon Français">
+  <meta property="og:description" content="Tableaux de conjugaison : présent, passé composé, imparfait et futur simple, avec prononciation.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%232b180c'/%3E%3Crect x='5' y='5' width='54' height='54' rx='6' fill='none' stroke='%23b58a3c' stroke-width='1.5'/%3E%3Cpath d='M20 14h24M20 50h24M22 14c0 10 10 12 10 18s-10 8-10 18M42 14c0 10-10 12-10 18s10 8 10 18' fill='none' stroke='%23e2c77f' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M26 46c2-5 10-5 12 0z' fill='%23e2c77f'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css?v=6">
+  <link rel="stylesheet" href="assets/css/book.css?v=6">
+  <link rel="stylesheet" href="assets/css/peinture.css?v=6">
+</head>
+<body>
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <header id="site-header"></header>
+  <main id="main" class="wrap"></main>
+  <footer class="site-footer">Mon Français · <span lang="fr">Bon courage !</span></footer>
+  <script src="assets/js/core.js?v=6"></script>
+  <script src="assets/js/verbs.js?v=6"></script>
+  <script src="assets/js/book.js?v=6"></script>
+  <script>
+    (function () {
+      const B = FL.bi, esc = FL.esc;
+      FL.renderHeader('verbs');
+      FL.renderRoom();
+      const list = FL.verbs.list().sort((a, b) => a.replace(/^se /, '').localeCompare(b.replace(/^se /, ''), 'fr'));
+      const main = document.getElementById('main');
+      main.innerHTML = `
+        <section class="hero topic-hero">
+          <div class="hero-emoji">🔁</div>
+          <h1 class="fr">Les verbes</h1>
+          <p class="hero-sub">${B('动词变位表', 'Verb conjugation tables')}</p>
+          <p class="hero-intro">${B('全站共用的动词库。现在时、复合过去时、未完成过去时、简单将来时。', 'The shared verb library for the whole site: present, passé composé, imparfait, futur simple.')}</p>
+        </section>
+        <div class="verb-page">
+          <aside class="verb-list card">
+            <input type="search" class="verb-search" placeholder="Chercher… 搜索 / search" aria-label="Search verbs">
+            <ul>${list.map(v => `<li><button type="button" data-verb="${esc(v)}"><span lang="fr">${esc(v)}</span><small>${FL.m(FL.verbs.get(v))}</small></button></li>`).join('')}</ul>
+          </aside>
+          <div class="verb-detail card"></div>
+        </div>`;
+      const detail = main.querySelector('.verb-detail');
+      const show = v => {
+        if (!FL.verbs.get(v)) v = list[0];
+        detail.innerHTML = FL.verbs.tableHTML(v);
+        main.querySelectorAll('[data-verb]').forEach(b => b.classList.toggle('on', b.dataset.verb === v));
+        history.replaceState(null, '', '#' + encodeURIComponent(v));
+      };
+      main.querySelector('.verb-list').addEventListener('click', e => {
+        const b = e.target.closest('[data-verb]');
+        if (b) { show(b.dataset.verb); if (window.innerWidth < 800) detail.scrollIntoView({ behavior: 'smooth' }); }
+      });
+      main.querySelector('.verb-search').addEventListener('input', e => {
+        const q = FL.norm(e.target.value, true);
+        main.querySelectorAll('.verb-list li').forEach(li => {
+          li.hidden = q && !FL.norm(li.textContent, true).includes(q);
+        });
+      });
+      show(decodeURIComponent(location.hash.slice(1)) || 'être');
+    })();
+  </script>
+</body>
+</html>
