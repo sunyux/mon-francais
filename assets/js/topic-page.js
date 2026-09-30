@@ -22,7 +22,7 @@
 
   const load = src => new Promise((res, rej) => {
     const s = document.createElement('script');
-    s.src = src + '?v=9'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
+    s.src = src + '?v=18'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
     document.head.appendChild(s);
   });
   meta.scripts.reduce((p, s) => p.then(() => load(s)), Promise.resolve())
@@ -78,23 +78,25 @@
     const pages = [];
     const add = (cid, el, opts = {}) => { pages.push({ el, chapter: cid, ...opts }); return el; };
 
-    /* 1. opening: the antique clock pops up out of the book */
-    const now = new Date();
+    /* 1. opening: the topic's little world rises out of the book */
+    const world = meta.world || { fr: d.title.fr, zh: d.title.zh, en: d.title.en, ground: '#e8cfa2', shade: '#a2835a', props: [] };
     const floaters = ['janvier', 'lundi', "l'été", 'midi', 'demain', 'minuit', 'le soir', 'mai'];
     const opening = document.createElement('div');
     opening.className = 'page wide-page opening';
     opening.style.setProperty('--chap', chap('ouverture').color);
     opening.innerHTML = `
       <div class="op-left">
+        <p class="op-world"><span lang="fr">${world.no ? `Petit monde n° ${world.no} · ` : ''}${esc(world.fr)}</span> ${FL.m(world)}</p>
         ${labels([esc('Le temps'), 'et', esc("l'heure")], 'title-labels')}
         ${labels([B(d.title.zh, d.title.en)], 'sub-labels')}
-        <p class="op-motto fr" data-say="Le temps nous appartient." tabindex="0" role="button">« Le temps nous appartient. » <span class="mean">${B('时间属于我们。', 'Time belongs to us.')}</span></p>
+        ${world.line ? `<p class="op-motto fr" data-say="${esc(world.line.fr)}" tabindex="0" role="button">${esc(world.line.fr)} <span class="mean">${FL.m(world.line)}</span></p>` : ''}
         <p class="op-intro">${FL.m(d.intro)}</p>
       </div>
       <div class="op-stage">
         <div class="pop-base"></div>
         ${floaters.map((f, i) => `<button type="button" class="floater" data-say="${esc(f)}" style="--i:${i}">${esc(f)}</button>`).join('')}
-        <div class="pop-clock" title="Cliquez pour entendre l'heure">${FL.antiqueClockSVG(now.getHours(), now.getMinutes(), { seconds: true })}</div>
+        <div class="pop-planet" title="Faites tourner la planète · touchez l’horloge">${FL.planetPoster(world, { stars: false })}</div>
+        <p class="planet-hint">${B('拖动旋转星球 · 点击钟楼听时间', 'Drag to turn the planet · tap the clock tower to hear the time')}</p>
       </div>
       <div class="op-right">
         ${labels([B('现在是', 'Right now it is')], 'sub-labels')}
@@ -105,13 +107,10 @@
           ${CHAPTERS.slice(1).map((c, i) => `<button type="button" data-goto="${c.id}" style="--tab:${c.color}"><b>${i + 1}</b><span lang="fr">${c.fr}</span><small>${B(c.zh, c.en)}</small></button>`).join('')}
         </div>
       </div>`;
-    const svg = opening.querySelector('.pop-clock svg');
     const liveEl = opening.querySelector('.live-time');
     let lastMin = -1;
     const tick = () => {
       const t = new Date();
-      FL.setHands(svg, t.getHours(), t.getMinutes());
-      FL.setSeconds(svg, t.getSeconds());
       if (t.getMinutes() !== lastMin) {
         lastMin = t.getMinutes();
         liveEl.textContent = FL.timeFr.colloquial(t.getHours(), t.getMinutes());
@@ -121,7 +120,16 @@
     tick();
     setInterval(tick, 1000);
     const sayNow = () => FL.speak(liveEl.textContent);
-    opening.querySelector('.pop-clock').addEventListener('click', sayNow);
+    // the planet is 3D (planet.js); the watercolor poster stays underneath as its fallback
+    let planetView = null;
+    FL.withPlanet(P => {
+      planetView = P.single(opening.querySelector('.pop-planet'), world, {
+        onPick: what => {
+          if (what === 'time') sayNow();
+          if (what === 'keeper') FL.speak(`Bonjour ! Je suis le gardien des heures. ${liveEl.textContent}`);
+        },
+      });
+    });
     opening.querySelector('.live-say').addEventListener('click', sayNow);
     opening.querySelector('.op-toc').addEventListener('click', e => {
       const b = e.target.closest('[data-goto]');
@@ -129,7 +137,10 @@
     });
     add('ouverture', opening, {
       wide: true,
-      onShow: () => { opening.classList.remove('pop'); void opening.offsetWidth; opening.classList.add('pop'); },
+      onShow: () => {
+        opening.classList.remove('pop'); void opening.offsetWidth; opening.classList.add('pop');
+        if (planetView) planetView.resume();
+      },
     });
 
     /* 2. vocabulary: one page per group */
@@ -256,7 +267,7 @@
       stopAll = FL.speakList(g.words.map(w => w.fr));
     });
 
-    const coverClock = FL.antiqueClockSVG(10, 10, { cls: 'cover-clock' });
+    const coverArt = FL.planetPoster(world);
     main.innerHTML = '<div class="book-mount"></div>';
     FL.Book.mount(main.querySelector('.book-mount'), {
       chapters: CHAPTERS.filter(c => pages.some(p => p.chapter === c.id)),
@@ -271,11 +282,11 @@
         return el;
       },
       cover: {
-        html: `<div class="cover-art" style="--cover:#2a1a12">
+        html: `<div class="cover-art" style="--cover:#2e3c66">
           <div class="cover-top"><span class="cover-kicker" lang="fr">Mon Français</span><span class="cover-no">I</span></div>
           ${labels([esc('Le temps'), esc("et l'heure")], 'title-labels')}
           ${labels([B(d.title.zh, d.title.en)], 'sub-labels')}
-          <div class="cover-illus">${coverClock}</div>
+          <div class="cover-illus">${coverArt}</div>
           <span class="open-btn" aria-hidden="true">▶</span>
           <p class="cover-hint">${B('点击打开', 'Click to open')}</p>
         </div>`,
