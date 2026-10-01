@@ -560,3 +560,30 @@ mark.aux { background: none; color: inherit; box-shadow: inset 0 -2px 0 var(--gr
 .verb-filter { flex-wrap: nowrap; }
 .verb-filter .zh + .en { display: none; }
 .verb-filter button { white-space: nowrap; }
+
+/* ---------- the star counter ---------- */
+.sc-left { display: grid; justify-items: center; gap: 10px; }
+.sc-sky { width: 100%; max-width: 300px; min-height: 180px; display: grid; align-content: center; }
+.sc-sky svg { width: 100%; height: auto; }
+.sc-sky use { fill: var(--gold, #c9a24a); stroke: var(--text); stroke-width: .6; }
+.sc-sky use.odd { fill: color-mix(in srgb, var(--gold, #c9a24a) 55%, #fff); }
+.sc-caption { margin: 4px 0 0; text-align: center; color: var(--muted); font-size: .85rem; }
+.sc-digits { font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: .02em; font-variant-numeric: lining-nums tabular-nums; }
+.sc-controls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.sc-controls .btn { padding: .35em .7em; font-size: .85rem; }
+.sc-input { width: 9rem; text-align: center; font-size: 1.1rem; padding: .35em .5em; font-variant-numeric: tabular-nums; }
+.sc-range { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; font-size: .9rem; color: var(--muted); }
+.sc-range label { display: flex; gap: 6px; align-items: center; }
+.sc-ledger { border-collapse: collapse; width: 100%; text-align: center; }
+.sc-ledger th { font-weight: 500; font-size: .85rem; color: var(--muted); padding: 2px 6px; }
+.sc-ledger td { padding: 4px 6px; border-top: 1px solid var(--line); }
+.sc-ledger td.digital { font-size: 1.4rem; }
+.sc-ledger-w { font-size: .85rem; line-height: 1.3; }
+.sc-panel { display: grid; gap: 12px; margin-top: 14px; }
+.sc-panel .q-big { text-align: center; }
+.sc-panel .play-big { justify-self: center; }
+.sc-how { margin: -4px 0 0; color: var(--muted); font-variant-numeric: lining-nums; }
+.sc-sym { margin: 0; text-align: center; color: var(--muted); font-size: 1.1rem; }
+.sc-calc { cursor: pointer; }
+.live-count { font-size: clamp(1.4rem, 2.4vw, 2rem); margin-top: -6px; font-variant-numeric: lining-nums tabular-nums; }
+.live-words { font-size: clamp(1rem, 1.6vw, 1.25rem) !important; }

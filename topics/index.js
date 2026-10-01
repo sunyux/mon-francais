@@ -12,13 +12,25 @@ FL.TOPICS = [
     // each topic is a little world; props are [type, latitude, longitude, scale]
     world: {
       fr: 'Le Gardien des heures', zh: '守钟人', en: 'The Clock Keeper', no: 'I',
+      greet: { fr: 'Bonjour ! Je suis le gardien des heures.' },
       line: { fr: 'Sur cette petite planète, un gardien veille sur l’heure.', zh: '在这颗小星球上，守钟人看守着时间。', en: 'On this small planet, a keeper watches over the time.' },
       ground: '#e8cfa2', shade: '#a2835a',
       props: [['clocktower', 64, 92], ['keeper', 38, 62], ['lamp', 30, 130], ['grass', 20, 30], ['grass', -10, 100], ['flower', 12, 75], ['flower', 44, 150], ['grass', 55, 200], ['flower', -20, 200]],
     },
   },
-  { id: 'nombres', emoji: '🔢', fr: 'Les nombres', zh: '数字', en: 'Numbers', blurb: { zh: '0 到 100，价格、电话号码', en: '0–100, prices, phone numbers' },
-    world: { fr: 'Le Bâtisseur de marches', zh: '搭台阶的人', en: 'The Step Builder', no: 'II', ground: '#bcd0e0', shade: '#6d8ca6', props: [['steps', 66, 90], ['grass', 20, 40], ['flower', 30, 140]] } },
+  {
+    id: 'nombres', emoji: '✦', ready: true,
+    fr: 'Les nombres', zh: '数字', en: 'Numbers',
+    blurb: { zh: '0 到十亿、序数词、怎么问数字、加减乘除', en: '0 to a billion, ordinals, asking about numbers, arithmetic' },
+    scripts: ['topics/nombres.js', 'topics/nombres-compteur.js'],
+    world: {
+      fr: 'La Compteuse d’étoiles', zh: '数星星的人', en: 'The Star Counter', no: 'II',
+      greet: { fr: 'Bonsoir ! Je compte les étoiles. J’en suis à' },
+      line: { fr: 'Sur cette planète, une femme compte les étoiles, une par une.', zh: '在这颗星球上，有个女人一颗一颗地数星星。', en: 'On this planet, a woman counts the stars, one by one.' },
+      ground: '#c4d3e6', shade: '#6a7fa6',
+      props: [['telescope', 60, 96], ['desk', 42, 50], ['counter', 36, 70], ['starfloat', 52, 140], ['starfloat', 28, 120, 0.8], ['starfloat', 70, 20, 0.7], ['grass', 15, 30], ['flower', 20, 160]],
+    },
+  },
   { id: 'presenter', emoji: '👋', fr: 'Se présenter', zh: '自我介绍', en: 'Introductions', blurb: { zh: '名字、国籍、职业', en: 'Name, nationality, job' },
     world: { fr: 'La Voyageuse', zh: '旅人', en: 'The Traveller', no: 'III', ground: '#d4dfbc', shade: '#86a06a', props: [['house', 64, 95], ['sign', 34, 40], ['grass', 20, 150]] } },
   { id: 'famille', emoji: '👨‍👩‍👧', fr: 'La famille', zh: '家庭', en: 'Family', blurb: { zh: '家庭成员、主有形容词', en: 'Family members, possessives' },

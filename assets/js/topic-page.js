@@ -22,7 +22,7 @@
 
   const load = src => new Promise((res, rej) => {
     const s = document.createElement('script');
-    s.src = src + '?v=18'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
+    s.src = src + '?v=20'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
     document.head.appendChild(s);
   });
   meta.scripts.reduce((p, s) => p.then(() => load(s)), Promise.resolve())
@@ -35,14 +35,15 @@
     { id: 'regles', fr: 'Règles', zh: '规则', en: 'Rules', color: '#4f6f5f' },
     { id: 'questions', fr: 'Questions', zh: '问句', en: 'Questions', color: '#5b4a6e' },
     { id: 'verbes', fr: 'Verbes', zh: '动词', en: 'Verbs', color: '#8a4b26' },
-    { id: 'horloge', fr: 'Horloge', zh: '时钟', en: 'Clock', color: '#2e3b5a' },
     { id: 'histoire', fr: 'Histoire', zh: '故事', en: 'Story', color: '#9c5a5e' },
     { id: 'pratique', fr: 'Pratique', zh: '练习', en: 'Practice', color: '#56603a' },
     { id: 'controle', fr: 'Contrôle', zh: '测试', en: 'Test', color: '#4a3a52' },
   ];
-  const chap = cid => CHAPTERS.find(c => c.id === cid);
+  // each widget (the clock, the star counter…) brings its own chapter; see FL.WIDGET_META
+  const widgetChapters = () => Object.values(FL.WIDGET_META || {}).map(w => w.chapter);
+  const chap = cid => CHAPTERS.find(c => c.id === cid) || widgetChapters().find(c => c.id === cid);
 
-  const PROVERBS = [
+  const DEFAULT_PROVERBS = [
     { fr: 'Chaque chose en son temps.', zh: '凡事各有其时。', en: 'Everything in its own time.' },
     { fr: 'Mieux vaut tard que jamais.', zh: '迟做总比不做好。', en: 'Better late than never.' },
     { fr: 'Le temps, c’est de l’argent.', zh: '时间就是金钱。', en: 'Time is money.' },
@@ -50,6 +51,7 @@
     { fr: 'Paris ne s’est pas fait en un jour.', zh: '巴黎不是一天建成的。', en: "Paris wasn't built in a day." },
   ];
   let proverbI = 0;
+  let PROVERBS = DEFAULT_PROVERBS;
   const WATCH = `<svg viewBox="0 0 200 60" class="sketch" aria-hidden="true"><circle cx="20" cy="30" r="14"/><path d="M60 16 A14 14 0 0 1 60 44 A8 14 0 0 0 60 16"/><circle cx="100" cy="30" r="14" class="full"/><path d="M140 16 A14 14 0 0 0 140 44 A8 14 0 0 1 140 16"/><circle cx="180" cy="30" r="14"/></svg>`;
 
   /* ---------- page helpers ---------- */
@@ -80,14 +82,16 @@
 
     /* 1. opening: the topic's little world rises out of the book */
     const world = meta.world || { fr: d.title.fr, zh: d.title.zh, en: d.title.en, ground: '#e8cfa2', shade: '#a2835a', props: [] };
-    const floaters = ['janvier', 'lundi', "l'été", 'midi', 'demain', 'minuit', 'le soir', 'mai'];
+    const op = d.opening || {};
+    const floaters = op.floaters || [];
+    PROVERBS = d.proverbs || DEFAULT_PROVERBS;
     const opening = document.createElement('div');
     opening.className = 'page wide-page opening';
     opening.style.setProperty('--chap', chap('ouverture').color);
     opening.innerHTML = `
       <div class="op-left">
         <p class="op-world"><span lang="fr">${world.no ? `Petit monde n° ${world.no} · ` : ''}${esc(world.fr)}</span> ${FL.m(world)}</p>
-        ${labels([esc('Le temps'), 'et', esc("l'heure")], 'title-labels')}
+        ${labels((op.title || [d.title.fr]).map(esc), 'title-labels')}
         ${labels([B(d.title.zh, d.title.en)], 'sub-labels')}
         ${world.line ? `<p class="op-motto fr" data-say="${esc(world.line.fr)}" tabindex="0" role="button">${esc(world.line.fr)} <span class="mean">${FL.m(world.line)}</span></p>` : ''}
         <p class="op-intro">${FL.m(d.intro)}</p>
@@ -95,42 +99,30 @@
       <div class="op-stage">
         <div class="pop-base"></div>
         ${floaters.map((f, i) => `<button type="button" class="floater" data-say="${esc(f)}" style="--i:${i}">${esc(f)}</button>`).join('')}
-        <div class="pop-planet" title="Faites tourner la planète · touchez l’horloge">${FL.planetPoster(world, { stars: false })}</div>
-        <p class="planet-hint">${B('拖动旋转星球 · 点击钟楼听时间', 'Drag to turn the planet · tap the clock tower to hear the time')}</p>
+        <div class="pop-planet" title="Faites tourner la planète">${FL.planetPoster(world, { stars: false })}</div>
+        <p class="planet-hint">${op.hint ? FL.m(op.hint) : B('拖动旋转星球', 'Drag to turn the planet')}</p>
       </div>
       <div class="op-right">
-        ${labels([B('现在是', 'Right now it is')], 'sub-labels')}
-        <div class="live-time fr"></div>
-        <button type="button" class="btn primary live-say">${FL.ICON_SPEAKER} ${B('听现在几点', 'Hear the time')}</button>
+        <div class="op-live"></div>
         <div class="op-toc">
           <p class="toc-title" lang="fr">Sommaire</p>
-          ${CHAPTERS.slice(1).map((c, i) => `<button type="button" data-goto="${c.id}" style="--tab:${c.color}"><b>${i + 1}</b><span lang="fr">${c.fr}</span><small>${B(c.zh, c.en)}</small></button>`).join('')}
+          ${CHAPTERS.slice(1).concat((d.widgets || []).map(w => FL.WIDGET_META[w] && FL.WIDGET_META[w].chapter).filter(Boolean)).map((c, i) => `<button type="button" data-goto="${c.id}" style="--tab:${c.color}"><b>${i + 1}</b><span lang="fr">${c.fr}</span><small>${B(c.zh, c.en)}</small></button>`).join('')}
         </div>
       </div>`;
-    const liveEl = opening.querySelector('.live-time');
-    let lastMin = -1;
-    const tick = () => {
-      const t = new Date();
-      if (t.getMinutes() !== lastMin) {
-        lastMin = t.getMinutes();
-        liveEl.textContent = FL.timeFr.colloquial(t.getHours(), t.getMinutes());
-        liveEl.dataset.say = liveEl.textContent;
-      }
-    };
-    tick();
-    setInterval(tick, 1000);
-    const sayNow = () => FL.speak(liveEl.textContent);
+    // a small live block (the time right now, the stars counted so far…) from the topic's widget file
+    const liveMaker = FL.openingLive && FL.openingLive[op.live];
+    const live = liveMaker ? liveMaker(opening.querySelector('.op-live')) : null;
+    const sayNow = () => live && FL.speak(live.text());
     // the planet is 3D (planet.js); the watercolor poster stays underneath as its fallback
     let planetView = null;
     FL.withPlanet(P => {
       planetView = P.single(opening.querySelector('.pop-planet'), world, {
         onPick: what => {
-          if (what === 'time') sayNow();
-          if (what === 'keeper') FL.speak(`Bonjour ! Je suis le gardien des heures. ${liveEl.textContent}`);
+          if (what === 'time' || what === 'live') sayNow();
+          if (what === 'keeper') FL.speak(`${world.greet ? world.greet.fr : 'Bonjour !'} ${live ? live.text() : ''}`);
         },
       });
     });
-    opening.querySelector('.live-say').addEventListener('click', sayNow);
     opening.querySelector('.op-toc').addEventListener('click', e => {
       const b = e.target.closest('[data-goto]');
       if (b) document.querySelector(`.tabs [data-chap="${b.dataset.goto}"]`).click();
@@ -205,17 +197,19 @@
       });
     }
 
-    /* 6. clock: the pendule on the left, its exercises on the right */
-    if ((d.widgets || []).includes('clock') && FL.widgets.clock) {
-      const tmp = document.createElement('div');
-      const parts = FL.widgets.clock(tmp);
-      const cl = add('horloge', mkPage('horloge', `
-        <h2><span class="pg-emoji">🕰️</span> <span lang="fr">L'horloge</span></h2>
-        <p class="pg-sub">${B('拖动指针拨钟 · 双击钟听时间', 'Drag the hands · double-click to hear it')}</p>`, { title: T, cls: 'clock-page' }), { left: true });
-      cl.querySelector('.pg-inner').append(parts.left);
-      const cr = add('horloge', mkPage('horloge', '', { title: T }));
-      cr.querySelector('.pg-inner').append(parts.right);
-    }
+    /* 6. the topic's hands-on chapter (the clock, the star counter…): tool on the left, exercises on the right */
+    (d.widgets || []).forEach(name => {
+      const meta = FL.WIDGET_META && FL.WIDGET_META[name];
+      if (!meta || !FL.widgets[name]) return;
+      const cid = meta.chapter.id;
+      const parts = FL.widgets[name](document.createElement('div'));
+      const wl = add(cid, mkPage(cid, `
+        <h2><span lang="fr">${esc(meta.h2)}</span></h2>
+        <p class="pg-sub">${FL.m(meta.sub)}</p>`, { title: T, cls: meta.cls || '' }), { left: true });
+      wl.querySelector('.pg-inner').append(parts.left);
+      const wr = add(cid, mkPage(cid, '', { title: T }));
+      wr.querySelector('.pg-inner').append(parts.right);
+    });
 
     /* 7. story (both pages) */
     if (d.story) {
@@ -270,7 +264,7 @@
     const coverArt = FL.planetPoster(world);
     main.innerHTML = '<div class="book-mount"></div>';
     FL.Book.mount(main.querySelector('.book-mount'), {
-      chapters: CHAPTERS.filter(c => pages.some(p => p.chapter === c.id)),
+      chapters: [...CHAPTERS.slice(0, 5), ...widgetChapters(), ...CHAPTERS.slice(5)].filter(c => pages.some(p => p.chapter === c.id)),
       pages,
       filler: () => {
         const p = PROVERBS[proverbI++ % PROVERBS.length];
@@ -283,8 +277,8 @@
       },
       cover: {
         html: `<div class="cover-art" style="--cover:#2e3c66">
-          <div class="cover-top"><span class="cover-kicker" lang="fr">Mon Français</span><span class="cover-no">I</span></div>
-          ${labels([esc('Le temps'), esc("et l'heure")], 'title-labels')}
+          <div class="cover-top"><span class="cover-kicker" lang="fr">Mon Français</span><span class="cover-no">${esc(world.no || '')}</span></div>
+          ${labels((op.cover || op.title || [d.title.fr]).map(esc), 'title-labels')}
           ${labels([B(d.title.zh, d.title.en)], 'sub-labels')}
           <div class="cover-illus">${coverArt}</div>
           <span class="open-btn" aria-hidden="true">▶</span>

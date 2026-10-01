@@ -235,6 +235,63 @@ const PROPS = {
     }
     return s;
   },
+  telescope() {
+    const g = new THREE.Group();
+    [0, 2.1, 4.2].forEach(a => {
+      const leg = inked(new THREE.CylinderGeometry(0.008, 0.01, 0.26, 6), '#8a6a4a', '#4f3a28', 0.004);
+      leg.position.set(Math.cos(a) * 0.05, 0.12, Math.sin(a) * 0.05);
+      leg.rotation.set(Math.sin(a) * 0.35, 0, -Math.cos(a) * 0.35);
+      g.add(leg);
+    });
+    const tube = inked(new THREE.CylinderGeometry(0.032, 0.05, 0.34, 14), '#e3c77e', '#9a7a3a');
+    tube.position.set(0.04, 0.3, 0); tube.rotation.z = -0.9; g.add(tube);
+    const lens = new THREE.Mesh(new THREE.CircleGeometry(0.03, 16), new THREE.MeshBasicMaterial({ color: '#cfe0f5' }));
+    lens.position.set(0.18, 0.4, 0); lens.rotation.y = Math.PI / 2; lens.rotation.x = 0.9; g.add(lens);
+    g.userData.say = 'live';
+    return g;
+  },
+  desk() {
+    const g = new THREE.Group();
+    const top = inked(new THREE.BoxGeometry(0.2, 0.02, 0.12), '#a8825a', '#6a4f33', 0.006);
+    top.position.y = 0.12; g.add(top);
+    [[-0.085, -0.045], [0.085, -0.045], [-0.085, 0.045], [0.085, 0.045]].forEach(([x, z]) => {
+      const leg = inked(new THREE.BoxGeometry(0.014, 0.12, 0.014), '#a8825a', '#6a4f33', 0.004);
+      leg.position.set(x, 0.06, z); g.add(leg);
+    });
+    [-1, 1].forEach(s => {
+      const page = inked(new THREE.BoxGeometry(0.075, 0.006, 0.09), '#fbf6ea', '#d8ccb2', 0.004);
+      page.position.set(s * 0.04, 0.136, 0); page.rotation.z = s * -0.12; g.add(page);
+    });
+    const ink = inked(new THREE.CylinderGeometry(0.012, 0.014, 0.025, 8), '#2b2436', '#14111c', 0.004);
+    ink.position.set(0.08, 0.142, 0.035); g.add(ink);
+    g.userData.say = 'live';
+    return g;
+  },
+  counter() {
+    const k = new THREE.Group();
+    const coat = inked(new THREE.ConeGeometry(0.075, 0.24, 14), '#6f9a86', '#3f6150');
+    coat.position.y = 0.12; k.add(coat);
+    const head = inked(new THREE.SphereGeometry(0.045, 16, 12), '#f3dcc0', '#c9a384');
+    head.position.y = 0.28; k.add(head);
+    const hair = inked(new THREE.SphereGeometry(0.047, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2), '#5a3d2b', '#2f1f15', 0.005);
+    hair.position.y = 0.29; k.add(hair);
+    const beret = inked(new THREE.CylinderGeometry(0.06, 0.055, 0.02, 16), '#b5503f', '#7a3229', 0.005);
+    beret.position.set(0.01, 0.33, 0); beret.rotation.z = -0.25; k.add(beret);
+    const book = inked(new THREE.BoxGeometry(0.05, 0.065, 0.012), '#3e5a8a', '#24365a', 0.004);
+    book.position.set(0.07, 0.15, 0.03); book.rotation.y = -0.4; k.add(book);
+    k.userData.say = 'keeper';
+    return k;
+  },
+  starfloat() {
+    const g = new THREE.Group();
+    const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.26, 4), new THREE.MeshBasicMaterial({ color: '#8a7f9a' }));
+    stalk.position.y = 0.13; g.add(stalk);
+    const star = inked(new THREE.OctahedronGeometry(0.035, 0), '#f6e3a3', '#c9a24a', 0.005);
+    star.position.y = 0.28; star.rotation.y = 0.6; g.add(star);
+    const l = glow('#ffe8a8', 0.2); l.position.y = 0.28; g.add(l);
+    g.userData.say = 'live';
+    return g;
+  },
   sign() {
     const g = new THREE.Group();
     const post = inked(new THREE.CylinderGeometry(0.01, 0.012, 0.26, 6), '#8a6a4a', '#4f3a28', 0.005);
@@ -391,7 +448,8 @@ function universe(el, worlds, { onOpen, labelsEl } = {}) {
   // the worlds sit on a gentle arc; the first (ready) one is the largest
   const items = worlds.map((w, i) => {
     const planet = buildWorld(w, w.ready ? 5 : 3);
-    const s = w.ready ? 1.55 : 0.62 + (i % 2) * 0.12;
+    // the first world is the large one in the middle; other open worlds are a little bigger than the 'bientôt' ones
+    const s = i === 0 ? 1.55 : w.ready ? 0.92 : 0.62 + (i % 2) * 0.12;
     planet.scale.setScalar(s);
     scene.add(planet);
     planet.userData.s = s;

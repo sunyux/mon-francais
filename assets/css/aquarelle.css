@@ -584,3 +584,17 @@ body.home { overflow-x: hidden; }
   .pop-planet { height: 300px; flex: none; }
   .planet-hint { position: static; margin-top: 4px; }
 }
+
+/* the star counter, in ink and washes */
+.sc-sky use { fill: #f1d98c; stroke: #2b2436; stroke-width: .7; }
+.sc-sky use.odd { fill: #f8ead0; }
+.sc-digits, .live-count { font-family: var(--font-head); font-weight: 600; color: var(--umber); }
+.sc-ledger th { font-family: var(--font-head); font-style: italic; font-size: 1rem; }
+.sc-ledger td.digital { font-family: var(--font-head); }
+.sc-ledger-w { font-family: var(--font-fr); }
+.sc-how, .sc-caption { font-family: var(--font-head); font-style: italic; }
+.counter-page .sc-left { margin-top: 6px; }
+
+/* paper is light even though the sky is dark: native inputs, selects and scrollbars follow the page */
+.page, #verb-pop, .settings-pop, .lost { color-scheme: light; }
+.sc-input { background: rgba(255, 253, 246, .6); border: 0; border-bottom: 1px solid var(--rule); border-radius: 0; color: var(--text); font-family: var(--font-head); font-size: 1.3rem; }
