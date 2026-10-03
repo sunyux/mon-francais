@@ -179,6 +179,35 @@
     if (g) g.setAttribute('transform', `rotate(${s * 6} 100 100)`);
   };
 
+  /* ---------- how the topic page presents this widget ---------- */
+  FL.WIDGET_META = FL.WIDGET_META || {};
+  FL.WIDGET_META.clock = {
+    chapter: { id: 'horloge', fr: 'Horloge', zh: '时钟', en: 'Clock', color: '#2e3b5a' },
+    h2: "L'horloge",
+    sub: { zh: '拖动指针拨钟 · 双击钟听时间', en: 'Drag the hands · double-click to hear it' },
+    cls: 'clock-page',
+  };
+  // the opening spread's live block: what time it is right now
+  FL.openingLive = FL.openingLive || {};
+  FL.openingLive.time = box => {
+    box.innerHTML = `<div class="labels sub-labels"><span>${B('现在是', 'Right now it is')}</span></div>
+      <div class="live-time fr"></div>
+      <button type="button" class="btn primary live-say">${FL.ICON_SPEAKER} ${B('听现在几点', 'Hear the time')}</button>`;
+    const el = box.querySelector('.live-time');
+    let last = -1;
+    const tick = () => {
+      const t = new Date();
+      if (t.getMinutes() === last) return;
+      last = t.getMinutes();
+      el.textContent = colloquial(t.getHours(), t.getMinutes());
+      el.dataset.say = el.textContent;
+    };
+    tick();
+    setInterval(tick, 1000);
+    box.querySelector('.live-say').addEventListener('click', () => FL.speak(el.textContent));
+    return { text: () => el.textContent };
+  };
+
   /* ---------- the interactive clock ----------
      Renders .clock-left (the clock) and .clock-right (the practice panel);
      the book puts them on facing pages, so listeners are bound to each half. */
