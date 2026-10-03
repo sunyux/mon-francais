@@ -230,6 +230,15 @@ FL.registerTopic({
     { inf: 'se lever', ex: { fr: 'Je me lève tôt.', zh: '我起得很早。', en: 'I get up early.' } },
   ],
 
+  // the opening spread: book title, words floating around the planet, the live block
+  opening: {
+    title: ['Le temps', 'et', "l'heure"],
+    cover: ['Le temps', "et l'heure"],
+    floaters: ['janvier', 'lundi', "l'été", 'midi', 'demain', 'minuit', 'le soir', 'mai'],
+    live: 'time',
+    hint: { zh: '拖动旋转星球 · 点击钟楼听时间', en: 'Drag to turn the planet · tap the clock tower to hear the time' },
+  },
+
   widgets: ['clock'],
   quizExtras: ['clock'],
 

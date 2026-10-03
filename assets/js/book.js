@@ -15,68 +15,91 @@
   const DUR = 750;
 
   /* ---------- the room behind the book (line drawing) ---------- */
+  // a star as a watercolor painter would dot it: five soft points
+  const star = (x, y, r, d = 0) => `<path class="wc-star" style="--d:${d}s" d="${Array.from({ length: 10 }, (_, i) => {
+    const a = (i * Math.PI) / 5 - Math.PI / 2, rr = i % 2 ? r * 0.45 : r;
+    return `${i ? 'L' : 'M'}${(x + Math.cos(a) * rr).toFixed(1)} ${(y + Math.sin(a) * rr).toFixed(1)}`;
+  }).join(' ')}Z"/>`;
+
+  /* ---------- the sky behind the book: a desert night in watercolor ---------- */
   FL.renderRoom = () => {
     if (document.querySelector('.room')) return;
     const room = document.createElement('div');
     room.className = 'room';
     room.setAttribute('aria-hidden', 'true');
+    const stars = [[120, 90, 9], [300, 60, 6], [520, 140, 8], [760, 70, 5], [980, 120, 9], [1180, 60, 6], [1400, 150, 8], [1520, 80, 5], [220, 260, 5], [660, 250, 6], [1060, 260, 5], [1300, 300, 7], [420, 360, 4], [880, 380, 5], [1460, 420, 4]]
+      .map(([x, y, r], i) => star(x, y, r, (i * 0.37) % 3)).join('');
     room.innerHTML = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
       <defs>
-        <filter id="paint" x="-5%" y="-5%" width="110%" height="110%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.014" numOctaves="3" seed="7" result="n"/>
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="18" xChannelSelector="R" yChannelSelector="G" result="d"/>
-          <feGaussianBlur in="d" stdDeviation="1.4"/>
+        <filter id="wc-edge" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed="3" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G" result="d"/>
+          <feGaussianBlur in="d" stdDeviation="2"/>
         </filter>
-        <filter id="haze"><feGaussianBlur stdDeviation="40"/></filter>
-        <linearGradient id="wall" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b1d13"/><stop offset=".55" stop-color="#1c130c"/><stop offset="1" stop-color="#0c0805"/></linearGradient>
-        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16202f"/><stop offset=".7" stop-color="#3a4758"/><stop offset="1" stop-color="#55606a"/></linearGradient>
-        <linearGradient id="curtain" x1="0" x2="1">
-          <stop offset="0" stop-color="#2a0906"/><stop offset=".14" stop-color="#6e2019"/><stop offset=".26" stop-color="#3a0f0b"/><stop offset=".42" stop-color="#7e2a22"/>
-          <stop offset=".58" stop-color="#420f0b"/><stop offset=".74" stop-color="#6a1f18"/><stop offset=".9" stop-color="#2e0a07"/><stop offset="1" stop-color="#1a0604"/>
+        <filter id="wc-soft"><feGaussianBlur stdDeviation="28"/></filter>
+        <linearGradient id="wc-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1c2442"/><stop offset=".55" stop-color="#34436b"/><stop offset=".85" stop-color="#6f7394"/><stop offset="1" stop-color="#b09a9a"/>
         </linearGradient>
-        <linearGradient id="table" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a2e18"/><stop offset=".08" stop-color="#2c1a0d"/><stop offset="1" stop-color="#0d0804"/></linearGradient>
-        <linearGradient id="cloth" x1="0" x2="1"><stop offset="0" stop-color="#3b3322"/><stop offset=".4" stop-color="#8a7648"/><stop offset=".7" stop-color="#5a4c2e"/><stop offset="1" stop-color="#2a2416"/></linearGradient>
-        <linearGradient id="brass" x1="0" x2="1"><stop offset="0" stop-color="#5a3f14"/><stop offset=".4" stop-color="#d8b766"/><stop offset="1" stop-color="#6b4a16"/></linearGradient>
-        <linearGradient id="wax" x1="0" x2="1"><stop offset="0" stop-color="#b8a582"/><stop offset=".4" stop-color="#f1e6cc"/><stop offset="1" stop-color="#9d8a68"/></linearGradient>
-        <radialGradient id="candle"><stop offset="0" stop-color="#ffd98a" stop-opacity=".55"/><stop offset=".35" stop-color="#d9822b" stop-opacity=".2"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
-        <radialGradient id="moonglow"><stop offset="0" stop-color="#dfe6e8" stop-opacity=".45"/><stop offset="1" stop-color="#dfe6e8" stop-opacity="0"/></radialGradient>
-        <radialGradient id="vig" cx=".5" cy=".55" r=".75"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".75"/></radialGradient>
+        <linearGradient id="wc-dune" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9a97c"/><stop offset="1" stop-color="#8d6f55"/></linearGradient>
+        <linearGradient id="wc-dune2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a88a6c"/><stop offset="1" stop-color="#6d5646"/></linearGradient>
       </defs>
-      <rect width="1600" height="900" fill="url(#wall)"/>
-      <g filter="url(#paint)">
-        <!-- window with moonlight -->
-        <path d="M1150 580 L1150 250 Q1150 140 1270 105 Q1390 140 1390 250 L1390 580 Z" fill="url(#sky)"/>
-        <circle cx="1305" cy="245" r="130" fill="url(#moonglow)"/>
-        <circle cx="1305" cy="245" r="34" fill="#e6dfc8"/>
-        <path d="M1150 580 L1150 250 Q1150 140 1270 105 Q1390 140 1390 250 L1390 580 M1270 105 L1270 580 M1150 390 L1390 390" fill="none" stroke="#1d130b" stroke-width="16"/>
-        <path d="M1130 588 L1410 588" stroke="#3a2616" stroke-width="18"/>
-        <!-- velvet curtain -->
-        <path d="M0 0 L380 0 Q330 260 400 470 Q430 540 360 600 Q320 760 360 900 L0 900 Z" fill="url(#curtain)"/>
-        <path d="M330 520 Q390 500 420 540 Q400 580 350 575 Z" fill="#9a7431"/>
-        <!-- table and cloth -->
-        <rect x="0" y="640" width="1600" height="260" fill="url(#table)"/>
-        <path d="M0 640 L1600 640" stroke="#6b4526" stroke-width="3"/>
-        <path d="M1060 636 Q1180 626 1330 644 Q1350 760 1420 900 L1000 900 Q1040 770 1060 636 Z" fill="url(#cloth)"/>
-        <!-- books -->
-        <rect x="150" y="598" width="260" height="42" rx="4" fill="#4a2a16"/><rect x="170" y="560" width="220" height="38" rx="4" fill="#2e3b3a"/><rect x="190" y="528" width="190" height="32" rx="4" fill="#5b2a1f"/>
-        <path d="M150 606 L410 606 M170 570 L390 570 M190 538 L380 538" stroke="#b08a4a" stroke-width="2" opacity=".6"/>
-        <!-- hourglass -->
-        <rect x="1128" y="494" width="116" height="14" rx="3" fill="url(#brass)"/><rect x="1128" y="624" width="116" height="14" rx="3" fill="url(#brass)"/>
-        <path d="M1140 508 Q1140 560 1186 566 Q1232 560 1232 508 Z M1140 624 Q1140 572 1186 566 Q1232 572 1232 624 Z" fill="rgba(220,215,200,.14)" stroke="rgba(240,232,210,.35)" stroke-width="2"/>
-        <path d="M1160 530 Q1186 552 1212 530 Z" fill="#b9914c"/><path d="M1150 624 Q1186 584 1222 624 Z" fill="#c9a15a"/>
-        <line x1="1186" y1="560" x2="1186" y2="610" stroke="#c9a15a" stroke-width="2"/>
-        <rect x="1132" y="508" width="6" height="116" fill="url(#brass)"/><rect x="1234" y="508" width="6" height="116" fill="url(#brass)"/>
-        <!-- candle in a brass stick -->
-        <ellipse cx="560" cy="636" rx="54" ry="9" fill="url(#brass)"/><rect x="552" y="560" width="16" height="76" fill="url(#brass)"/><ellipse cx="560" cy="560" rx="26" ry="6" fill="url(#brass)"/>
-        <rect x="548" y="470" width="24" height="90" rx="3" fill="url(#wax)"/>
-        <!-- a fallen rose -->
-        <path d="M1380 650 q18 -16 36 0 q-4 18 -18 20 q-16 -2 -18 -20 z" fill="#6e1c18"/><path d="M1340 668 L1392 660" stroke="#3b4a2a" stroke-width="3"/>
+      <rect width="1600" height="900" fill="url(#wc-sky)"/>
+      <g filter="url(#wc-soft)" opacity=".55">
+        <ellipse cx="300" cy="220" rx="260" ry="60" fill="#4a5a86"/><ellipse cx="1250" cy="330" rx="300" ry="70" fill="#56648e"/><ellipse cx="820" cy="140" rx="220" ry="50" fill="#3c4a74"/>
       </g>
-      <path class="flame-c" d="M560 468 Q549 448 560 424 Q571 448 560 468 Z" fill="#ffe1a0"/>
-      <circle class="candle-glow" cx="560" cy="450" r="360" fill="url(#candle)"/>
-      <rect width="1600" height="900" fill="url(#vig)"/>
+      <path class="wc-moon" filter="url(#wc-edge)" d="M1330 124 A46 46 0 1 0 1330 216 A36 46 0 1 1 1330 124 Z" fill="#f3e6bf"/>
+      <g filter="url(#wc-edge)">${stars}</g>
+      <g filter="url(#wc-edge)">
+        <path d="M0 700 Q260 610 560 660 T1100 640 T1600 620 L1600 900 L0 900 Z" fill="url(#wc-dune2)" opacity=".9"/>
+        <path d="M0 760 Q340 690 720 740 T1600 720 L1600 900 L0 900 Z" fill="url(#wc-dune)"/>
+      </g>
     </svg>`;
     document.body.prepend(room);
+  };
+
+  /* ---------- a watercolor portrait of a little world (covers, fallback, turning pages) ---------- */
+  const PROP_ART = {
+    clocktower: `<rect x="-9" y="-58" width="18" height="58" fill="#ecd9b0"/><path d="M-13 -58 L0 -80 L13 -58 Z" fill="#c8594b"/><circle cy="-40" r="7" fill="#f7efdc" stroke="#2b2436" stroke-width="1.6"/><path d="M0 -40 L0 -45 M0 -40 L3 -38" stroke="#2b2436" stroke-width="1.2"/>`,
+    keeper: `<path d="M-7 0 L0 -22 L7 0 Z" fill="#5b7fb5"/><circle cy="-26" r="4.5" fill="#f3dcc0"/><rect x="-3.5" y="-37" width="7" height="8" fill="#3a3350"/><rect x="-6" y="-30" width="12" height="1.6" fill="#3a3350"/><circle cx="9" cy="-9" r="2.4" fill="#ffd98a"/>`,
+    lamp: `<rect x="-1.2" y="-34" width="2.4" height="34" fill="#4a4058"/><rect x="-3.5" y="-40" width="7" height="6" fill="#4a4058"/><circle cy="-37" r="7" fill="#ffd98a" opacity=".45"/>`,
+    house: `<rect x="-10" y="-15" width="20" height="15" fill="#f0e2c4"/><path d="M-13 -15 L0 -27 L13 -15 Z" fill="#c8594b"/><rect x="-2.5" y="-10" width="5" height="5" fill="#ffd98a"/>`,
+    tree: `<rect x="-2" y="-16" width="4" height="16" fill="#8a6a4a"/><circle cy="-24" r="11" fill="#8fae7a"/><circle cx="5" cy="-24" r="2.2" fill="#d9594b"/><circle cx="-4" cy="-19" r="2.2" fill="#d9594b"/>`,
+    steps: `<rect x="-18" y="-7" width="8" height="7" fill="#e9c46a"/><rect x="-10" y="-14" width="8" height="14" fill="#8fb3d9"/><rect x="-2" y="-21" width="8" height="21" fill="#e9a3a0"/><rect x="6" y="-28" width="8" height="28" fill="#e9c46a"/>`,
+    telescope: `<path d="M-6 0 L0 -16 L6 0 M0 -16 L0 0" stroke="#8a6a4a" stroke-width="1.6" fill="none"/><rect x="-3" y="-22" width="22" height="6" rx="2" fill="#e3c77e" transform="rotate(-35 0 -19)"/>`,
+    desk: `<rect x="-11" y="-10" width="22" height="2.5" fill="#a8825a"/><path d="M-9 -8 V0 M9 -8 V0" stroke="#a8825a" stroke-width="1.6"/><path d="M-8 -11 L0 -12.5 L8 -11" stroke="#fbf6ea" stroke-width="2.4" fill="none"/>`,
+    counter: `<path d="M-7 0 L0 -22 L7 0 Z" fill="#6f9a86"/><circle cy="-26" r="4.5" fill="#f3dcc0"/><ellipse cx="1" cy="-31" rx="6" ry="1.8" fill="#b5503f"/><rect x="5" y="-14" width="5" height="6" fill="#3e5a8a"/>`,
+    starfloat: `<path d="M0 0 V-18" stroke="#8a7f9a" stroke-width=".8"/><path d="M0 -25 L1.6 -20.5 L6 -20.5 L2.4 -17.6 L3.7 -13 L0 -15.8 L-3.7 -13 L-2.4 -17.6 L-6 -20.5 L-1.6 -20.5 Z" fill="#f6e3a3"/>`,
+    sign: `<rect x="-1" y="-24" width="2" height="24" fill="#8a6a4a"/><rect x="0" y="-22" width="14" height="4" fill="#f0e2c4"/><rect x="-12" y="-15" width="12" height="4" fill="#f0e2c4"/>`,
+    flower: `<rect x="-.6" y="-8" width="1.2" height="8" fill="#4f6f47"/><circle cy="-9" r="2.4" fill="#e9a3a0"/>`,
+    grass: `<path d="M-3 0 L-2 -6 L-1 0 M1 0 L2 -8 L3 0" stroke="#4f6f47" stroke-width="1.2" fill="none"/>`,
+  };
+  let posterN = 0;
+  FL.planetPoster = (world, { stars = true } = {}) => {
+    const id = `pp${++posterN}`;
+    const cx = 150, cy = 178, R = 104;
+    // props on the visible top arc, placed by longitude
+    const art = (world.props || []).filter(p => p[1] > 5).map(([type, , lon, s = 1]) => {
+      const a = Math.max(-62, Math.min(62, (lon - 90) * 0.6));
+      const rad = (a * Math.PI) / 180;
+      const x = cx + Math.sin(rad) * (R - 2), y = cy - Math.cos(rad) * (R - 2);
+      return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${a.toFixed(1)}) scale(${s})">${PROP_ART[type] || ''}</g>`;
+    }).join('');
+    return `<svg viewBox="0 0 300 300" class="planet-poster" role="img" aria-label="${FL.esc(world.fr)}">
+      <defs>
+        <filter id="${id}e" x="-15%" y="-15%" width="130%" height="130%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="${posterN}" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <radialGradient id="${id}g" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="${world.ground}"/><stop offset=".7" stop-color="${world.ground}"/><stop offset="1" stop-color="${world.shade}"/></radialGradient>
+      </defs>
+      ${stars ? `<g opacity=".8" filter="url(#${id}e)">${star(40, 50, 6)}${star(250, 40, 5)}${star(268, 150, 4)}${star(30, 170, 4)}${star(210, 280, 3)}</g>` : ''}
+      <g filter="url(#${id}e)">
+        <circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#${id}g)"/>
+        <circle cx="${cx - 30}" cy="${cy - 28}" r="${R * 0.42}" fill="#fff" opacity=".12"/>
+        <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#2b2436" stroke-width="2.2"/>
+        ${art}
+      </g>
+    </svg>`;
   };
 
   /* ---------- the book ---------- */
@@ -181,6 +204,7 @@
           half.className = `page-half ${side}`;
           const c = s.wide.el.cloneNode(true);
           c.classList.remove('landing');
+          c.querySelectorAll('.has-planet').forEach(n => n.classList.remove('has-planet')); // a canvas copies blank: show the poster
           c.querySelectorAll('[id]:not(clipPath)').forEach(n => n.removeAttribute('id'));
           half.append(c);
           return half;
@@ -190,6 +214,7 @@
         else if (!s.wide) p = side === 'left' ? s.left : s.right;
         const c = p ? p.el.cloneNode(true) : blank();
         c.classList.remove('landing');
+        c.querySelectorAll('.has-planet').forEach(n => n.classList.remove('has-planet'));
         c.querySelectorAll('[id]:not(clipPath)').forEach(n => n.removeAttribute('id'));
         c.setAttribute('aria-hidden', 'true');
         return c;
