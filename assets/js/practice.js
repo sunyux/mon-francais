@@ -121,7 +121,8 @@
     const out = [];
     for (const x of [...same, ...other]) {
       const kx = key(x);
-      if (!seen.has(kx)) { seen.add(kx); out.push(x); }
+      // a word spelled the same (nous the subject, nous the object…) would also be right
+      if (!seen.has(kx) && FL.cleanFr(x.fr) !== FL.cleanFr(item.fr)) { seen.add(kx); out.push(x); }
       if (out.length === n) break;
     }
     return out;
