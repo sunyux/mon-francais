@@ -220,8 +220,4 @@
   };
 
   FL.registerTopic = data => { FL.topicData[data.id] = data; };
-
-  // planet.js is an ES module that loads after the classic scripts; queue work until it's ready
-  FL._planetWaiters = FL._planetWaiters || [];
-  FL.withPlanet = fn => (FL.Planet ? fn(FL.Planet) : FL._planetWaiters.push(fn));
 })();

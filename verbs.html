@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Les verbes · Mon Français</title>
   <meta name="description" content="Tableaux de conjugaison : présent, passé composé, imparfait et futur simple, avec prononciation.">
-  <meta name="theme-color" content="#1c2442">
+  <meta name="theme-color" content="#140d08">
   <meta property="og:title" content="Mon Français">
   <meta property="og:description" content="Tableaux de conjugaison : présent, passé composé, imparfait et futur simple, avec prononciation.">
   <meta property="og:type" content="website">
@@ -13,18 +13,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="assets/css/style.css?v=20">
-  <link rel="stylesheet" href="assets/css/book.css?v=20">
-  <link rel="stylesheet" href="assets/css/aquarelle.css?v=20">
+  <link rel="stylesheet" href="assets/css/style.css?v=6">
+  <link rel="stylesheet" href="assets/css/book.css?v=6">
+  <link rel="stylesheet" href="assets/css/peinture.css?v=6">
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
   <header id="site-header"></header>
   <main id="main" class="wrap"></main>
   <footer class="site-footer">Mon Français · <span lang="fr">Bon courage !</span></footer>
-  <script src="assets/js/core.js?v=20"></script>
-  <script src="assets/js/verbs.js?v=20"></script>
-  <script src="assets/js/book.js?v=20"></script>
+  <script src="assets/js/core.js?v=6"></script>
+  <script src="assets/js/verbs.js?v=6"></script>
+  <script src="assets/js/book.js?v=6"></script>
   <script>
     (function () {
       const B = FL.bi, esc = FL.esc;
@@ -32,17 +32,9 @@
       FL.renderRoom();
       const list = FL.verbs.list().sort((a, b) => a.replace(/^se /, '').localeCompare(b.replace(/^se /, ''), 'fr'));
       const main = document.getElementById('main');
-      // irregular = breaks its group's pattern; spelling = regular -er with a spelling change (lève, commençons)
-      const kindOf = v => {
-        const c = FL.verbs.get(v);
-        const n = c.special.present + c.special.pc + c.special.imparfait + c.special.futur;
-        return c.group === 3 && n ? 'irr' : n ? 'spell' : 'reg';
-      };
-      const TAG = { irr: B('不规则', 'irregular'), spell: B('拼写变化', 'spelling') };
-      const counts = { irr: 0, spell: 0, reg: 0 };
-      list.forEach(v => counts[kindOf(v)]++);
       main.innerHTML = `
         <section class="hero topic-hero">
+          <div class="hero-emoji">🔁</div>
           <h1 class="fr">Les verbes</h1>
           <p class="hero-sub">${B('动词变位表', 'Verb conjugation tables')}</p>
           <p class="hero-intro">${B('全站共用的动词库。现在时、复合过去时、未完成过去时、简单将来时。', 'The shared verb library for the whole site: present, passé composé, imparfait, futur simple.')}</p>
@@ -50,17 +42,7 @@
         <div class="verb-page">
           <aside class="verb-list card">
             <input type="search" class="verb-search" placeholder="Chercher… 搜索 / search" aria-label="Search verbs">
-            <div class="seg verb-filter" role="group" aria-label="Filter verbs">
-              <button type="button" data-kind="all" class="on">${B('全部', 'All')} <span class="vf-n">${list.length}</span></button>
-              <button type="button" data-kind="irr">${B('不规则', 'Irregular')} <span class="vf-n">${counts.irr}</span></button>
-              <button type="button" data-kind="reg">${B('规则', 'Regular')} <span class="vf-n">${counts.reg + counts.spell}</span></button>
-            </div>
-            <ul>${list.map(v => {
-              const k = kindOf(v), c = FL.verbs.get(v);
-              return `<li class="vk-${k}" data-kind="${k}" data-search="${esc(FL.norm(`${v} ${c.zh} ${c.en}`, true))}"><button type="button" data-verb="${esc(v)}">
-                <span class="vl-name"><span lang="fr">${esc(v)}</span>${TAG[k] ? `<span class="v-tag ${k}">${TAG[k]}</span>` : ''}</span>
-                <small>${FL.m(c)}</small></button></li>`;
-            }).join('')}</ul>
+            <ul>${list.map(v => `<li><button type="button" data-verb="${esc(v)}"><span lang="fr">${esc(v)}</span><small>${FL.m(FL.verbs.get(v))}</small></button></li>`).join('')}</ul>
           </aside>
           <div class="verb-detail card"></div>
         </div>`;
@@ -75,23 +57,11 @@
         const b = e.target.closest('[data-verb]');
         if (b) { show(b.dataset.verb); if (window.innerWidth < 800) detail.scrollIntoView({ behavior: 'smooth' }); }
       });
-      // search and filter work together
-      let kind = 'all';
-      const applyFilter = () => {
-        const q = FL.norm(main.querySelector('.verb-search').value, true);
+      main.querySelector('.verb-search').addEventListener('input', e => {
+        const q = FL.norm(e.target.value, true);
         main.querySelectorAll('.verb-list li').forEach(li => {
-          const k = li.dataset.kind;
-          const kindOk = kind === 'all' || (kind === 'irr' ? k === 'irr' : k !== 'irr');
-          li.hidden = !kindOk || (q && !li.dataset.search.includes(q));
+          li.hidden = q && !FL.norm(li.textContent, true).includes(q);
         });
-      };
-      main.querySelector('.verb-search').addEventListener('input', applyFilter);
-      main.querySelector('.verb-filter').addEventListener('click', e => {
-        const b = e.target.closest('[data-kind]');
-        if (!b) return;
-        kind = b.dataset.kind;
-        main.querySelectorAll('.verb-filter [data-kind]').forEach(x => x.classList.toggle('on', x === b));
-        applyFilter();
       });
       show(decodeURIComponent(location.hash.slice(1)) || 'être');
     })();

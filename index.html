@@ -3,72 +3,113 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mon Français · Des petits mondes</title>
-  <meta name="description" content="Apprendre le français de petit monde en petit monde : chaque sujet est une petite planète, et chaque planète a son livre.">
-  <meta name="theme-color" content="#1c2442">
-  <meta property="og:title" content="Mon Français · Des petits mondes">
-  <meta property="og:description" content="Chaque sujet est une petite planète, et chaque planète a son livre.">
+  <title>Mon Français</title>
+  <meta name="description" content="Un cahier de français illustré : vocabulaire, conjugaisons, prononciation et exercices, sujet par sujet.">
+  <meta name="theme-color" content="#140d08">
+  <meta property="og:title" content="Mon Français">
+  <meta property="og:description" content="Un cahier de français illustré : vocabulaire, conjugaisons, prononciation et exercices, sujet par sujet.">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231c2442'/%3E%3Ccircle cx='32' cy='38' r='17' fill='%23e8cfa2' stroke='%232b2436' stroke-width='2'/%3E%3Crect x='30' y='12' width='5' height='12' fill='%23ecd9b0'/%3E%3Cpath d='M28 12 L32.5 6 L37 12Z' fill='%23c8594b'/%3E%3Cpath d='M50 12 l1.5 3.5 3.5 1.5 -3.5 1.5 -1.5 3.5 -1.5 -3.5 -3.5 -1.5 3.5 -1.5z' fill='%23f3e6bf'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%232b180c'/%3E%3Crect x='5' y='5' width='54' height='54' rx='6' fill='none' stroke='%23b58a3c' stroke-width='1.5'/%3E%3Cpath d='M20 14h24M20 50h24M22 14c0 10 10 12 10 18s-10 8-10 18M42 14c0 10-10 12-10 18s10 8 10 18' fill='none' stroke='%23e2c77f' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M26 46c2-5 10-5 12 0z' fill='%23e2c77f'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="assets/css/style.css?v=20">
-  <link rel="stylesheet" href="assets/css/book.css?v=20">
-  <link rel="stylesheet" href="assets/css/aquarelle.css?v=20">
-  <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }</script>
+  <link rel="stylesheet" href="assets/css/style.css?v=6">
+  <link rel="stylesheet" href="assets/css/book.css?v=6">
+  <link rel="stylesheet" href="assets/css/peinture.css?v=6">
 </head>
-<body class="home">
+<body>
   <a class="skip-link" href="#main">Aller au contenu</a>
   <header id="site-header"></header>
-  <main id="main"></main>
-  <script src="assets/js/core.js?v=20"></script>
-  <script src="assets/js/verbs.js?v=20"></script>
-  <script src="topics/index.js?v=20"></script>
-  <script src="assets/js/book.js?v=20"></script>
+  <main id="main" class="wrap"></main>
+  <footer class="site-footer">Mon Français · <span lang="fr">Bon courage !</span></footer>
+  <script src="assets/js/core.js?v=6"></script>
+  <script src="assets/js/verbs.js?v=6"></script>
+  <script src="topics/index.js?v=6"></script>
+  <script src="assets/js/book.js?v=6"></script>
   <script>
     (function () {
       const B = FL.bi, esc = FL.esc;
       FL.renderHeader('home');
       FL.renderRoom();
-      const worlds = FL.TOPICS.filter(t => t.world).map(t => ({ ...t.world, id: t.id, ready: !!t.ready, topic: t }));
-      const main = document.getElementById('main');
-      main.innerHTML = `
-        <section class="sky" aria-labelledby="sky-title">
-          <div class="sky-canvas" aria-hidden="true"></div>
-          <div class="sky-intro">
-            <p class="sky-kicker" lang="fr">Mon Français</p>
-            <h1 id="sky-title" lang="fr">Un livre,<br>des petits mondes.</h1>
-            <p class="sky-sub">${B('每个主题是一颗小星球，每颗星球有它自己的书。', 'Each topic is a small planet, and each planet has its own book.')}</p>
-            <p class="sky-hint">${B('点一颗星球，打开它的书', 'Choose a planet to open its book')}</p>
-          </div>
-          <ol class="sky-labels">${worlds.map(w => `
-            <li><a class="world-label ${w.ready ? '' : 'soon'}" data-world="${w.id}" href="${w.ready ? `topic.html?t=${w.id}` : '#'}" ${w.ready ? '' : 'aria-disabled="true"'}>
-              <span class="wl-poster">${FL.planetPoster(w, { stars: false })}</span>
-              <span class="wl-no" lang="fr">Petit monde n° ${w.no}</span>
-              <b class="wl-name" lang="fr">${esc(w.fr)}</b>
-              <span class="wl-topic"><span lang="fr">${esc(w.topic.fr)}</span> · ${B(w.zh, w.en)}</span>
-              ${w.ready ? '' : `<span class="wl-soon">${B('即将开放', 'coming soon')}</span>`}
-            </a></li>`).join('')}
-          </ol>
-        </section>`;
-      const sky = main.querySelector('.sky');
-      const go = w => { location.href = `topic.html?t=${w.id}`; };
-      let view = null;
-      // a label click flies to the planet first (when the 3D sky is running)
-      main.querySelector('.sky-labels').addEventListener('click', e => {
-        const a = e.target.closest('[data-world]');
-        if (!a) return;
-        const w = worlds.find(x => x.id === a.dataset.world);
-        if (!w.ready) { e.preventDefault(); a.classList.remove('nudge'); void a.offsetWidth; a.classList.add('nudge'); return; }
-        if (view) { e.preventDefault(); view.open(w.id); }
-      });
-      FL.withPlanet(P => {
-        view = P.universe(sky.querySelector('.sky-canvas'), worlds, { onOpen: go, labelsEl: main.querySelector('.sky-labels') });
-        if (view) sky.classList.add('is-3d');
+      const labels = (lines, cls = '') => `<div class="labels ${cls}">${lines.map(l => `<span>${l}</span>`).join('')}</div>`;
+      const mk = (cid, color, inner, cls = '') => {
+        const el = document.createElement('div');
+        el.className = 'page ' + cls;
+        el.style.setProperty('--chap', color);
+        el.innerHTML = `<div class="pg-head"><span class="pg-chap" lang="fr">${cid}</span><span class="pg-book" lang="fr">Mon Français</span></div><div class="pg-inner">${inner}</div><div class="pg-foot"></div>`;
+        return el;
+      };
+      const features = [
+        ['I', '示范发音', 'Pronunciation', '点击任何法语都能听', 'Click any French to hear it'],
+        ['II', '动词变位', 'Conjugations', '鼠标放在动词上显示变位', 'Hover a verb to see its forms'],
+        ['III', '闪卡 · 选择题', 'Flashcards · Quiz', '每个主题都有', 'In every topic'],
+        ['IV', '跟我打字', 'Type with me', '跟打、默写、听写', 'Copy, recall, dictation'],
+        ['V', '小故事', 'A story', '用本课词汇讲故事', 'Told with the chapter’s words'],
+        ['VI', '翻页', 'Turn the pages', '拖动页角，或按 ← →', 'Drag a corner, or press ← →'],
+      ];
+      const ex = mk('Ex-libris', '#7e2a22', `
+        <div class="exlibris">
+          <p class="ex-kicker" lang="fr">Ce livre appartient à</p>
+          <input class="ex-name fr" aria-label="Votre nom" placeholder="votre nom…" maxlength="40">
+          <p class="mean">${B('这本书属于…（写下你的名字）', 'This book belongs to… (write your name)')}</p>
+          <div class="ex-seal" aria-hidden="true">F</div>
+          <p class="ex-quote fr" data-say="Nous sommes les petites-filles des sorcières que vous n'avez pas pu brûler." tabindex="0" role="button">« Nous sommes les petites-filles des sorcières que vous n’avez pas pu brûler. »</p>
+          <p class="mean">${B('我们是你们没能烧死的女巫的孙女。', 'We are the granddaughters of the witches you could not burn.')}</p>
+          <p class="try">${B('试试把鼠标放在动词上：', 'Hover the verbs:')}<br><span class="fr" data-say="Je pars à huit heures et je rentre le soir.">Je pars à huit heures et je rentre le soir.</span></p>
+        </div>`);
+      const toc = mk('Sommaire', '#7e2a22', `
+        <h2><span lang="fr">Sommaire</span></h2><p class="pg-sub">${B('目录 · 选择一个主题', 'Contents · pick a topic')}</p>
+        <ol class="toc">${FL.TOPICS.map((t, i) => `
+          <li><a class="toc-row ${t.ready ? '' : 'soon'}" ${t.ready ? `href="topic.html?t=${t.id}"` : 'aria-disabled="true"'}>
+            <span class="toc-n">${i + 1}</span><span class="toc-emoji">${t.emoji}</span>
+            <span class="toc-txt"><b lang="fr">${esc(t.fr)}</b><small>${B(t.zh, t.en)} · ${FL.m(t.blurb)}</small></span>
+            <span class="toc-go">${t.ready ? '→' : B('即将', 'soon')}</span></a></li>`).join('')}
+        </ol>`);
+      const feat = mk('Mode d’emploi', '#9a7431', `
+        <h2><span lang="fr">Sur chaque page</span></h2><p class="pg-sub">${B('每个主题都有', 'In every topic')}</p>
+        <div class="feature-grid">${features.map(f => `<div class="feature"><span>${f[0]}</span><b>${B(f[1], f[2])}</b><small>${B(f[3], f[4])}</small></div>`).join('')}</div>`);
+      const modes = mk('Mode d’emploi', '#9a7431', `
+        <h2><span lang="fr">Trois langues</span></h2><p class="pg-sub">${B('右上角切换语言模式', 'Switch mode at the top right')}</p>
+        <div class="mode-cards">${FL.MODES.map(m => `<button type="button" class="mode-card" data-setmode-card="${m.id}"><b>${m.label}</b><span class="fr">l'heure</span><small>${m.id === 'zh-en-fr' ? '小时 · hour' : m.id === 'zh-fr' ? '小时' : 'hour'}</small></button>`).join('')}</div>
+        <p class="tip">${B('所有设置都会自动记住。', 'Your settings are remembered.')}</p>`);
+      modes.addEventListener('click', e => { const b = e.target.closest('[data-setmode-card]'); if (b) FL.setMode(b.dataset.setmodeCard); });
+      const nameIn = ex.querySelector('.ex-name');
+      nameIn.value = FL.store.get('name', '');
+      nameIn.addEventListener('input', () => FL.store.set('name', nameIn.value));
+      const pages = [
+        { el: ex, chapter: 'sommaire' }, { el: toc, chapter: 'sommaire' },
+        { el: feat, chapter: 'guide' }, { el: modes, chapter: 'guide' },
+      ];
+      pages.forEach((p, i) => { p.el.querySelector('.pg-foot').textContent = i + 1; FL.markVerbs(p.el); });
+      const eiffel = `<svg viewBox="0 0 200 260" class="cover-eiffel fleuron" aria-hidden="true">
+        <g fill="none" stroke="#d8b766" stroke-width="2.2" stroke-linecap="round">
+          <path d="M100 30 C70 70 70 110 100 130 C130 110 130 70 100 30 Z"/>
+          <path d="M100 130 C60 140 40 170 30 210 M100 130 C140 140 160 170 170 210"/>
+          <path d="M30 210 C50 196 70 200 76 214 M170 210 C150 196 130 200 124 214"/>
+          <path d="M100 130 L100 240 M84 240 L116 240"/>
+          <circle cx="100" cy="86" r="10"/>
+        </g>
+      </svg>`;
+      document.getElementById('main').innerHTML = '<div class="book-mount"></div>';
+      FL.Book.mount(document.querySelector('.book-mount'), {
+        pages,
+        chapters: [
+          { id: 'sommaire', fr: 'Sommaire', zh: '目录', en: 'Contents', color: '#7e2a22' },
+          { id: 'guide', fr: 'Mode d’emploi', zh: '使用方法', en: 'How to use', color: '#9a7431' },
+        ],
+        filler: () => { const d = document.createElement('div'); d.className = 'page blank-page'; return d; },
+        cover: {
+          html: `<div class="cover-art" style="--cover:#3b1510">
+            <div class="cover-top"><span class="cover-kicker" lang="fr">Cahier de français</span><span class="cover-no">A1</span></div>
+            ${labels(['Mon', 'Français'], 'title-labels')}
+            ${labels([B('我的法语笔记', 'My French notebook')], 'sub-labels')}
+            <div class="cover-illus">${eiffel}</div>
+            <span class="open-btn" aria-hidden="true">▶</span>
+            <p class="cover-hint">${B('点击打开', 'Click to open')}</p>
+          </div>`,
+        },
       });
     })();
   </script>
-  <script type="module" src="assets/js/planet.js?v=20"></script>
 </body>
 </html>
