@@ -8,7 +8,7 @@ FL.TOPICS = [
     id: 'time', emoji: '⏰', ready: true,
     fr: "Le temps et l'heure", zh: '时间', en: 'Time',
     blurb: { zh: '年、季节、月份、星期、日期、几点钟', en: 'Years, seasons, months, days, dates, telling time' },
-    scripts: ['topics/time.js', 'topics/time-clock.js'],
+    scripts: ['topics/time.js', 'topics/time-clock.js', 'topics/time-pics.js'],
     // each topic is a little world; props are [type, latitude, longitude, scale]
     world: {
       fr: 'Le Gardien des heures', zh: '守钟人', en: 'The Clock Keeper', no: 'I',
@@ -22,7 +22,7 @@ FL.TOPICS = [
     id: 'nombres', emoji: '✦', ready: true,
     fr: 'Les nombres', zh: '数字', en: 'Numbers',
     blurb: { zh: '0 到十亿、序数词、怎么问数字、加减乘除', en: '0 to a billion, ordinals, asking about numbers, arithmetic' },
-    scripts: ['topics/nombres.js', 'topics/nombres-compteur.js'],
+    scripts: ['topics/nombres.js', 'topics/nombres-compteur.js', 'topics/nombres-pics.js'],
     world: {
       fr: 'La Compteuse d’étoiles', zh: '数星星的人', en: 'The Star Counter', no: 'II',
       greet: { fr: 'Bonsoir ! Je compte les étoiles. J’en suis à' },
@@ -35,7 +35,7 @@ FL.TOPICS = [
     id: 'pronoms', emoji: '◐', ready: true,
     fr: 'Les pronoms', zh: '代词', en: 'Pronouns',
     blurb: { zh: '人称代词、y 和 en、指示词、主有词', en: 'Personal pronouns, y and en, demonstratives, possessives' },
-    scripts: ['topics/pronoms.js', 'topics/pronoms-miroir.js'],
+    scripts: ['topics/pronoms.js', 'topics/pronoms-miroir.js', 'topics/pronoms-pics.js'],
     world: {
       fr: 'La Dame aux miroirs', zh: '镜子夫人', en: 'The Lady of Mirrors', no: 'III',
       greet: { fr: 'Bonjour ! Regarde-moi… et regarde-toi.' },

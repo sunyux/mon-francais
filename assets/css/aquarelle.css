@@ -629,3 +629,19 @@ body.home { overflow-x: hidden; }
 .mi-fb:empty { display: none; }
 .mi-fb .bad { color: var(--red); }
 .mi-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+/* ---------- vocabulary pictures (ink and wash, see pictures.js) ---------- */
+.wpic { display: block; width: 52px; height: 52px; overflow: visible; }
+.page .word.has-pic { grid-template-columns: 52px minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; }
+.page .word.has-pic .wpic { grid-row: span 2; }
+.page .word.has-pic .wnote { grid-column: 2 / -1; }
+.word:hover .wpic { transform: rotate(-3deg) scale(1.06); }
+.wpic { transition: transform .2s ease; }
+.wpic.card-pic { width: 96px; height: 96px; margin: 0 auto 6px; }
+.wpic.q-pic { width: 84px; height: 84px; margin: 4px auto 2px; }
+@media (max-width: 520px) {
+  .page .word.has-pic { grid-template-columns: 44px minmax(0, 1fr); }
+  .page .word.has-pic .wpic { width: 44px; height: 44px; }
+  .page .word.has-pic .mean { grid-column: 2; }
+}
+@media (prefers-reduced-motion: reduce) { .wpic { transition: none; } .word:hover .wpic { transform: none; } }
