@@ -43,8 +43,9 @@
     const card = body.querySelector('.card3d');
     const front = body.querySelector('.front'), back = body.querySelector('.back');
 
-    const frSide = w => `<div class="big fr">${FL.esc(w.fr)}</div>${FL.sayBtn(w.fr, 'lg')}`;
-    const mSide = w => `<div class="big meaning">${FL.m(w)}</div>${w.note ? `<div class="note">${FL.m(w.note)}</div>` : ''}`;
+    const pic = (w, cls) => (FL.pic ? FL.pic(w, w.group, cfg.id, { cls }) : '');
+    const frSide = w => `${pic(w, 'card-pic')}<div class="big fr">${FL.esc(w.fr)}</div>${FL.sayBtn(w.fr, 'lg')}`;
+    const mSide = w => `${pic(w, 'card-pic')}<div class="big meaning">${FL.m(w)}</div>${w.note ? `<div class="note">${FL.m(w.note)}</div>` : ''}`;
 
     function start() {
       const items = (src.list.find(s => s.id === srcId) || src.list[0]).items;
@@ -121,12 +122,13 @@
     const out = [];
     for (const x of [...same, ...other]) {
       const kx = key(x);
-      if (!seen.has(kx)) { seen.add(kx); out.push(x); }
+      // a word spelled the same (nous the subject, nous the object…) would also be right
+      if (!seen.has(kx) && FL.cleanFr(x.fr) !== FL.cleanFr(item.fr)) { seen.add(kx); out.push(x); }
       if (out.length === n) break;
     }
     return out;
   }
-  function wordQuestion(items, pool, kind) {
+  function wordQuestion(items, pool, kind, topicId) {
     const item = FL.pick(items);
     const ds = distractors(pool, item, 3, kind === 'fr2m' ? x => x.zh + x.en : x => x.fr);
     const opts = FL.shuffle([item, ...ds]);
@@ -136,7 +138,7 @@
       options: opts.map(o => FL.m(o)), answer, say: item.fr, autoSay: true,
     };
     if (kind === 'm2fr') return {
-      prompt: `<div class="q-label">${B('用法语怎么说？', 'How do you say it in French?')}</div><div class="q-big">${FL.m(item)}</div>`,
+      prompt: `<div class="q-label">${B('用法语怎么说？', 'How do you say it in French?')}</div>${FL.pic ? FL.pic(item, item.group, topicId, { cls: 'q-pic' }) : ''}<div class="q-big">${FL.m(item)}</div>`,
       options: opts.map(o => `<span lang="fr">${FL.esc(o.fr)}</span>`), answer, say: item.fr,
     };
     return { // listening
@@ -157,7 +159,7 @@
       qs = [];
       for (let k = 0; k < N_Q; k++) {
         if (extras.length && Math.random() < 0.3) { qs.push(FL.quizGenerators[FL.pick(extras)]()); continue; }
-        qs.push(wordQuestion(items, pool, FL.pick(['fr2m', 'm2fr', 'listen'])));
+        qs.push(wordQuestion(items, pool, FL.pick(['fr2m', 'm2fr', 'listen']), cfg.id));
       }
       qi = 0; score = 0;
     }

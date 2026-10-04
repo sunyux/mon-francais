@@ -574,9 +574,9 @@ body.home { overflow-x: hidden; }
 
 @media (max-width: 700px) {
   /* one row of small worlds: short captions only */
-  .sky.is-3d .world-label.soon { white-space: normal; width: 5.6rem; }
-  .sky.is-3d .world-label.soon .wl-no, .sky.is-3d .world-label.soon .wl-soon { display: none; }
-  .sky.is-3d .world-label.soon .wl-name { font-size: .88rem; }
+  .sky.is-3d li:not(:first-child) .world-label { white-space: normal; width: 5.6rem; padding: 4px 2px; }
+  .sky.is-3d li:not(:first-child) .wl-no, .sky.is-3d li:not(:first-child) .wl-soon { display: none; }
+  .sky.is-3d li:not(:first-child) .world-label .wl-name, .sky.is-3d li:not(:first-child) .world-label:not(.soon) .wl-name { font-size: .88rem; }
 }
 @media (max-width: 899px) {
   /* one column: the hint sits under the planet instead of over the next block */
@@ -599,3 +599,49 @@ body.home { overflow-x: hidden; }
 /* paper is light even though the sky is dark: native inputs, selects and scrollbars follow the page */
 .page, #verb-pop, .settings-pop, .lost { color-scheme: light; }
 .sc-input { background: rgba(255, 253, 246, .6); border: 0; border-bottom: 1px solid var(--rule); border-radius: 0; color: var(--text); font-family: var(--font-head); font-size: 1.3rem; }
+
+/* ---------- Les pronoms: the mirror and the workbook ---------- */
+.mirror-pair { display: grid; gap: .25em; justify-items: center; margin: .4em 0 .8em; font-family: var(--font-head); font-style: italic; font-size: 1.35rem; color: var(--umber); }
+.mirror-pair .mp-b { color: #6a4560; opacity: .85; }
+.mp-bar { width: 3.5rem; height: 1px; background: var(--rule); }
+.mi-persons { flex-wrap: wrap; }
+.mi-glass { margin: 8px auto 8px; padding: 6px 22px; border-radius: 50% / 14%; border: 2px solid #d8b46a; background: radial-gradient(ellipse at 30% 20%, rgba(246, 251, 255, .75), rgba(207, 220, 234, .35) 70%); transition: transform .26s ease; }
+.mi-glass.turning { transform: scaleX(0); }
+.mi-glass.shake { animation: mi-shake .35s; }
+@keyframes mi-shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.mi-table { width: 100%; border-collapse: collapse; }
+.mi-table th { text-align: left; font-weight: 400; font-size: .8rem; line-height: 1.2; color: var(--muted); padding: 3px 10px 3px 0; vertical-align: top; width: 34%; }
+.mi-table td { padding: 3px 0; font-family: var(--font-head); font-size: 1.05rem; line-height: 1.25; }
+.mi-table [data-say] { cursor: pointer; border-bottom: 1px dotted var(--rule); }
+.mi-ex-line { margin-left: .6em; font-size: .8rem; font-style: italic; color: var(--muted); }
+.mi-flip { display: block; margin: 0 auto; }
+.mi-note { text-align: center; font-family: var(--font-head); font-style: italic; color: var(--muted); margin: .6em 0 0; }
+.mi-tabs button { min-width: 2.2em; }
+.mi-ex-title { font-family: var(--font-head); font-weight: 500; font-size: 1.1rem; margin: .8em 0 .4em; }
+.mi-items { margin: 0; padding-left: 1.4em; display: grid; gap: 8px; }
+.mi-items li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.mi-q { flex: 1 1 12em; }
+.mi-in { width: 8.5em; padding: 2px 4px; background: rgba(255, 253, 246, .6); border: 0; border-bottom: 1px solid var(--rule); border-radius: 0; font-family: var(--font-fr); font-size: 1rem; color: var(--text); }
+.mi-items li.long .mi-in { flex: 1 1 100%; width: auto; }
+.mi-in.is-ok { border-bottom-color: var(--green); }
+.mi-in.is-no { border-bottom-color: var(--red); }
+.mi-fb { flex: 1 1 100%; font-size: .9rem; min-height: 0; }
+.mi-fb:empty { display: none; }
+.mi-fb .bad { color: var(--red); }
+.mi-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+/* ---------- vocabulary pictures (ink and wash, see pictures.js) ---------- */
+.wpic { display: block; width: 52px; height: 52px; overflow: visible; }
+.page .word.has-pic { grid-template-columns: 52px minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; }
+.page .word.has-pic .wpic { grid-row: span 2; }
+.page .word.has-pic .wnote { grid-column: 2 / -1; }
+.word:hover .wpic { transform: rotate(-3deg) scale(1.06); }
+.wpic { transition: transform .2s ease; }
+.wpic.card-pic { width: 96px; height: 96px; margin: 0 auto 6px; }
+.wpic.q-pic { width: 84px; height: 84px; margin: 4px auto 2px; }
+@media (max-width: 520px) {
+  .page .word.has-pic { grid-template-columns: 44px minmax(0, 1fr); }
+  .page .word.has-pic .wpic { width: 44px; height: 44px; }
+  .page .word.has-pic .mean { grid-column: 2; }
+}
+@media (prefers-reduced-motion: reduce) { .wpic { transition: none; } .word:hover .wpic { transform: none; } }

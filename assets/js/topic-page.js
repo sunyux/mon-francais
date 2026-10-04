@@ -22,7 +22,7 @@
 
   const load = src => new Promise((res, rej) => {
     const s = document.createElement('script');
-    s.src = src + '?v=20'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
+    s.src = src + '?v=25'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
     document.head.appendChild(s);
   });
   meta.scripts.reduce((p, s) => p.then(() => load(s)), Promise.resolve())
@@ -67,12 +67,16 @@
     return el;
   }
   const labels = (lines, cls = '') => `<div class="labels ${cls}">${lines.map(l => `<span>${l}</span>`).join('')}</div>`;
-  const wordRow = w => `
-    <li class="word" data-say="${esc(w.fr)}" tabindex="0" role="button">
+  const wordRow = (w, g, topicId) => {
+    const pic = FL.pic ? FL.pic(w, g, topicId) : '';
+    return `
+    <li class="word${pic ? ' has-pic' : ''}" data-say="${esc(w.fr)}" tabindex="0" role="button">
+      ${pic}
       <span class="fr">${esc(w.fr)}</span>
       <span class="mean">${FL.m(w)}</span>
       ${w.note ? `<span class="wnote">${FL.m(w.note)}</span>` : ''}
     </li>`;
+  };
 
   function render(d) {
     document.title = `${d.title.fr} · Mon Français`;
@@ -142,7 +146,7 @@
         <button type="button" class="btn small" data-playall="${g.id}">▶ ${B('全部朗读', 'Play all')}</button>
       </div>
       <p class="pg-sub">${FL.m(g.title)}</p>
-      <ul class="words">${g.words.map(wordRow).join('')}</ul>
+      <ul class="words">${g.words.map(w => wordRow(w, g.id, d.id)).join('')}</ul>
       ${g.tip ? `<p class="tip">${FL.m(g.tip)}</p>` : ''}`, { title: T }), { left: g === d.groups[0] }));
 
     /* 3. rules */

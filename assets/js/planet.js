@@ -282,6 +282,44 @@ const PROPS = {
     k.userData.say = 'keeper';
     return k;
   },
+  mirror() {
+    const g = new THREE.Group();
+    const oval = new THREE.Group();
+    oval.position.y = 0.3; oval.scale.set(0.78, 1, 1); g.add(oval);
+    const frame = inked(new THREE.TorusGeometry(0.12, 0.016, 8, 40), '#d8b46a', '#8f6c2c', 0.005);
+    oval.add(frame);
+    [1, -1].forEach(side => {
+      const glass = new THREE.Mesh(new THREE.CircleGeometry(0.115, 40), new THREE.MeshBasicMaterial({ color: '#cfdcea' }));
+      glass.position.z = 0.004 * side;
+      if (side < 0) glass.rotation.y = Math.PI;
+      oval.add(glass);
+    });
+    const shine = new THREE.Mesh(new THREE.PlaneGeometry(0.018, 0.12), new THREE.MeshBasicMaterial({ color: '#f6fbff', transparent: true, opacity: 0.8 }));
+    shine.position.set(-0.04, 0.02, 0.006); shine.rotation.z = -0.5; oval.add(shine);
+    [-1, 1].forEach(s => {
+      const leg = inked(new THREE.CylinderGeometry(0.008, 0.01, 0.2, 6), '#8f6c2c', '#5a4218', 0.004);
+      leg.position.set(s * 0.06, 0.09, 0); leg.rotation.z = s * 0.25; g.add(leg);
+    });
+    g.userData.say = 'live';
+    return g;
+  },
+  dame() {
+    const k = new THREE.Group();
+    const gown = inked(new THREE.ConeGeometry(0.085, 0.25, 16), '#8a5a86', '#4f3050');
+    gown.position.y = 0.125; k.add(gown);
+    const head = inked(new THREE.SphereGeometry(0.044, 16, 12), '#f3dcc0', '#c9a384');
+    head.position.y = 0.29; k.add(head);
+    const brim = inked(new THREE.CylinderGeometry(0.07, 0.07, 0.008, 18), '#2e2638', '#16121c', 0.006);
+    brim.position.y = 0.322; k.add(brim);
+    const hat = inked(new THREE.CylinderGeometry(0.034, 0.04, 0.11, 14), '#2e2638', '#16121c', 0.006);
+    hat.position.y = 0.38; k.add(hat);
+    const plume = inked(new THREE.ConeGeometry(0.014, 0.14, 8), '#e9d6a8', '#a8906a', 0.004);
+    plume.position.set(0.035, 0.45, 0); plume.rotation.z = -0.6; k.add(plume);
+    const hand = inked(new THREE.TorusGeometry(0.022, 0.005, 6, 16), '#d8b46a', '#8f6c2c', 0.003);
+    hand.position.set(0.085, 0.17, 0.03); hand.rotation.y = -0.6; k.add(hand);
+    k.userData.say = 'keeper';
+    return k;
+  },
   starfloat() {
     const g = new THREE.Group();
     const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.26, 4), new THREE.MeshBasicMaterial({ color: '#8a7f9a' }));
@@ -449,7 +487,7 @@ function universe(el, worlds, { onOpen, labelsEl } = {}) {
   const items = worlds.map((w, i) => {
     const planet = buildWorld(w, w.ready ? 5 : 3);
     // the first world is the large one in the middle; other open worlds are a little bigger than the 'bientôt' ones
-    const s = i === 0 ? 1.55 : w.ready ? 0.92 : 0.62 + (i % 2) * 0.12;
+    const s = i === 0 ? 1.55 : w.ready ? 0.8 : 0.58 + (i % 2) * 0.08;
     planet.scale.setScalar(s);
     scene.add(planet);
     planet.userData.s = s;
@@ -458,15 +496,18 @@ function universe(el, worlds, { onOpen, labelsEl } = {}) {
   function layout() {
     const wide = camera.aspect > 1.1;
     // visible half-width at the planets' depth, so positions scale with the window
-    const halfW = Math.tan((camera.fov / 2) * DEG) * camera.position.z * camera.aspect;
+    const halfH = Math.tan((camera.fov / 2) * DEG) * camera.position.z, halfW = halfH * camera.aspect;
+    // the small worlds zigzag down two columns, spread over the visible height however many there are
+    const n = items.length - 1, top = halfH * 0.62, bottom = -halfH * 0.66;
+    const step = n > 1 ? (top - bottom) / (n - 1) : 0;
     items.forEach((it, i) => {
       // the ready world sits right of centre, clear of the intro text; the others line up further right
       if (i === 0) it.base.set(wide ? halfW * 0.12 : 0, wide ? -0.7 : -0.6, 0);
       else {
-        const k = i - 1, n = items.length - 1;
+        const k = i - 1;
         it.base.set(
-          wide ? halfW * (0.56 + (k % 2) * 0.24) : -halfW * 0.72 + k * ((halfW * 1.44) / Math.max(1, n - 1)),
-          wide ? 2.4 - k * 1.45 : -3.9,
+          wide ? halfW * (0.56 + (k % 2) * 0.26) : -halfW * 0.72 + k * ((halfW * 1.44) / Math.max(1, n - 1)),
+          wide ? top - k * step : -3.9,
           0);
       }
       // on a narrow screen the small worlds shrink to fit one row

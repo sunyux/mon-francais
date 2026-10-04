@@ -90,6 +90,7 @@
           </div>
           <div class="progress thin"><div class="bar"><i style="width:${pct}%"></i></div></div>
           <p class="q-label">${q.kind === 'choose' ? B('选出对应的法语', 'Choose the French') : B('写出法语', 'Write it in French')}</p>
+          ${FL.pic ? FL.pic(q.w, q.w.group, cfg.id, { cls: 'q-pic' }) : ''}
           <div class="ex-prompt">${FL.m(q.w)}</div>
           <button type="button" class="btn ghost ex-listen" data-ex="listen" aria-label="Écouter le mot">${FL.ICON_SPEAKER} ${B('听发音', 'Listen')}</button>
           ${q.kind === 'choose'
