@@ -22,6 +22,10 @@ FL.registerTopic({
   groups: [
     {
       id: 'sujets', emoji: '', title: { fr: 'Pronoms personnels sujets', zh: '人称代词·主语', en: 'Subject pronouns' },
+      memo: [
+        { zh: '和英语一一对应：je = I，tu = you，il = he，elle = she。复数只加 s：il → ils，elle → elles。', en: 'One-to-one with English: je = I, tu = you, il = he, elle = she. The plurals just add s: il → ils, elle → elles.' },
+        { zh: 'on ≈ 英语的 one（“人们”），所以动词也像单数：on parle。', en: 'On ≈ English “one”, so its verb is singular: on parle.' },
+      ],
       tip: { zh: '放在动词前做主语。on 口语里常代替 nous（On y va !），动词用第三人称单数。', en: 'They go before the verb. In speech, on often replaces nous (On y va!) and takes the third person singular.' },
       words: [
         { fr: 'je', zh: '我（主语）', en: 'I (subject)', note: { zh: '元音前省音：j’aime', en: 'j’ before a vowel: j’aime' } },
@@ -37,6 +41,10 @@ FL.registerTopic({
     },
     {
       id: 'toniques', emoji: '', title: { fr: 'Pronoms personnels toniques', zh: '人称代词·重读', en: 'Stressed pronouns' },
+      memo: [
+        { zh: '只用记 4 个新形式：moi、toi（押韵 -oi），lui、eux（他、他们）。其他四个和主语一样：elle、nous、vous、elles。', en: 'Only four new forms: moi, toi (they rhyme), lui, eux. The other four are the same as the subject: elle, nous, vous, elles.' },
+        { zh: '想想英语的 “Me!” “Who, me?”：单独喊出来、强调自己时用 moi。', en: 'Think of English “Me!”: when you shout it alone or stress it, French uses moi.' },
+      ],
       tip: { zh: '用在介词后（avec moi, chez toi）、c’est 后（C’est lui.）、单独回答或强调（Moi, je suis étudiant.）。', en: 'After a preposition (avec moi, chez toi), after c’est (C’est lui.), alone or for emphasis (Moi, je suis étudiant.).' },
       words: [
         { fr: 'moi', zh: '我（重读）', en: 'me (stressed)' },
@@ -51,6 +59,10 @@ FL.registerTopic({
     },
     {
       id: 'cod', emoji: '', title: { fr: 'Pronoms compléments d’objet direct', zh: '人称代词·直接宾语', en: 'Direct object pronouns' },
+      memo: [
+        { zh: 'le、la、les 和定冠词一模一样：le livre → le，la clé → la，les clés → les。冠词“跳”到动词前面去了。', en: 'Le, la, les are exactly the articles: le livre → le, la clé → la, les clés → les. The article hops in front of the verb.' },
+        { zh: 'me、te 就是 moi、toi 的“短版”，nous、vous 不变。', en: 'Me, te are short moi, toi; nous and vous never change.' },
+      ],
       tip: { zh: '替代动词后直接跟的人或物（不带介词），放在动词前：Je vois Marie. → Je la vois. me、te、le、la 在元音前省音：m’、t’、l’。', en: 'They replace a person or thing that follows the verb directly (no preposition) and go before the verb: Je vois Marie. → Je la vois. Me, te, le, la become m’, t’, l’ before a vowel.' },
       words: [
         { fr: 'me', zh: '我（直接宾语）', en: 'me (direct object)', note: { zh: '元音前 m’：Il m’écoute.', en: 'm’ before a vowel: Il m’écoute.' } },
@@ -64,6 +76,11 @@ FL.registerTopic({
     },
     {
       id: 'coi', emoji: '', title: { fr: 'Pronoms compléments d’objet indirect', zh: '人称代词·间接宾语', en: 'Indirect object pronouns' },
+      memo: [
+        { zh: '和直接宾语只差第三人称：le / la → lui，les → leur。两个都以 l 开头。', en: 'Only the third person differs from the direct object: le / la → lui, les → leur. Both start with l.' },
+        { zh: '测试：动词后有 à + 人，就用 lui / leur。常见的 à 动词：parler à, téléphoner à, donner à, dire à, écrire à, répondre à。', en: 'Test: if the verb takes à + a person, use lui / leur. Common à-verbs: parler à, téléphoner à, donner à, dire à, écrire à, répondre à.' },
+        { zh: 'lui 不分男女（对他、对她都是 lui）；leur 作代词永远不加 s。', en: 'Lui is the same for him and her; leur as a pronoun never takes an s.' },
+      ],
       tip: { zh: '替代 à + 人，放在动词前：Je parle à Paul. → Je lui parle. lui 指他或她；leur 作代词时不加 s。', en: 'They replace à + a person and go before the verb: Je parle à Paul. → Je lui parle. Lui means him or her; leur as a pronoun never takes an s.' },
       words: [
         { fr: 'me', zh: '对我；给我（间接宾语）', en: 'to me (indirect object)' },
@@ -76,6 +93,10 @@ FL.registerTopic({
     },
     {
       id: 'indefinis', emoji: '', title: { fr: 'Pronoms indéfinis', zh: '泛指代词', en: 'Indefinite pronouns' },
+      memo: [
+        { zh: '拆开就懂：quelqu\'un = quelque + un（某 + 一个 = someone），quelque chose = 某 + 东西（something），chacun = chaque + un（每 + 一个 = each one）。', en: 'Take them apart: quelqu\'un = quelque + un (some + one), quelque chose = some + thing, chacun = chaque + un (each + one).' },
+        { zh: '它们都只当一个人看，动词用第三人称单数：Chacun a… / Quelqu\'un frappe…', en: 'Each counts as one person, so the verb is third-person singular: Chacun a… / Quelqu\'un frappe…' },
+      ],
       tip: { zh: '都用第三人称单数的动词：Chacun a son livre. On parle français ici.', en: 'All take a third-person singular verb: Chacun a son livre. On parle français ici.' },
       words: [
         { fr: 'on', zh: '人们；有人；我们（泛指）', en: 'people; someone; we (indefinite)' },
@@ -87,6 +108,11 @@ FL.registerTopic({
     },
     {
       id: 'y-en', emoji: '', title: { fr: 'Pronoms adverbiaux : y et en', zh: '副代词 y 和 en', en: 'Adverbial pronouns: y and en' },
+      memo: [
+        { zh: 'à → y，de → en：介词换成同样短的小词。', en: 'À → y, de → en: each little preposition becomes an equally little word.' },
+        { zh: 'y 想成 “there”（J\'y vais = I\'m going there）；en 想成 “some / of it”（J\'en ai deux = I have two of them）。', en: 'Think of y as “there” (J\'y vais = I\'m going there) and en as “some / of it” (J\'en ai deux = I have two of them).' },
+        { zh: '用 en 时数量要重复说出来：J\'en ai deux，不能只说 J\'en ai。', en: 'With en, say the number again: J\'en ai deux, not just J\'en ai.' },
+      ],
       tip: { zh: 'y 替代地点或 à + 事物：J’y vais. en 替代 de + 事物或数量：J’en ai deux. 都放在动词前。', en: 'Y replaces a place or à + a thing: J’y vais. En replaces de + a thing, or a quantity: J’en ai deux. Both go before the verb.' },
       words: [
         { fr: 'y', zh: '那里；对此（替代 à + 事物／地点）', en: 'there; about it (replaces à + thing / a place)' },
@@ -95,6 +121,10 @@ FL.registerTopic({
     },
     {
       id: 'demonstratifs', emoji: '', title: { fr: 'Pronoms démonstratifs', zh: '指示代词', en: 'Demonstrative pronouns' },
+      memo: [
+        { zh: '公式：ce + 重读代词！celui = ce + lui，celle = ce + elle，ceux = ce + eux，celles = ce + elles。', en: 'Formula: ce + stressed pronoun! celui = ce + lui, celle = ce + elle, ceux = ce + eux, celles = ce + elles.' },
+        { zh: 'ça 就是 cela 的口语缩写；ce 多跟 être 连用：c\'est, ce sont。', en: 'Ça is spoken cela, shortened; ce mostly goes with être: c\'est, ce sont.' },
+      ],
       tip: { zh: '中性：ce（c’est）、cela、ça。个体指示代词替代名词，要接 de、qui 或 -ci / -là：celui de Paul，celle-ci。', en: 'Neuter: ce (c’est), cela, ça. The others replace a noun and need de, qui or -ci / -là: celui de Paul, celle-ci.' },
       words: [
         { fr: 'ce', zh: '这；那（中性，c’est）', en: 'it; this (neuter, c’est)', note: { zh: '多用在 être 前：c’est, ce sont', en: 'mostly before être: c’est, ce sont' } },
@@ -108,6 +138,10 @@ FL.registerTopic({
     },
     {
       id: 'adj-demonstratifs', emoji: '', title: { fr: 'Adjectifs démonstratifs', zh: '指示形容词', en: 'Demonstrative adjectives' },
+      memo: [
+        { zh: 'ces 和 les、des、mes 一样以 -es 结尾：复数都长这样。', en: 'Ces ends in -es like les, des, mes: that is what plural looks like.' },
+        { zh: 'cet 和 cette 发音一模一样 /sɛt/。cet 只是为了避免 “ce ami” 两个元音撞在一起。', en: 'Cet sounds exactly like cette /sɛt/. It exists only so you never say “ce ami” with two vowels colliding.' },
+      ],
       tip: { zh: '放在名词前，和名词性数配合。cet 用于元音或哑音 h 开头的阳性单数名词：cet ami, cet hôtel。', en: 'They go before a noun and agree with it. Cet is for a masculine singular noun starting with a vowel or mute h: cet ami, cet hôtel.' },
       words: [
         { fr: 'ce', zh: '这个；那个（阳单，名词前）', en: 'this / that (masc. sing., before a noun)', note: { zh: 'ce livre', en: 'ce livre' } },
@@ -118,6 +152,11 @@ FL.registerTopic({
     },
     {
       id: 'adj-possessifs', emoji: '', title: { fr: 'Adjectifs possessifs', zh: '主有形容词', en: 'Possessive adjectives' },
+      memo: [
+        { zh: 'm-t-s 只换第一个字母：mon / ton / son，ma / ta / sa，mes / tes / ses。', en: 'M-t-s, change just the first letter: mon / ton / son, ma / ta / sa, mes / tes / ses.' },
+        { zh: '复数主人更简单，只分单复数：notre / nos，votre / vos，leur / leurs。', en: 'Plural owners are simpler, only singular or plural: notre / nos, votre / vos, leur / leurs.' },
+        { zh: '和英语相反：跟“东西”配合，不跟主人。sa mère 可以是 his mother，也可以是 her mother。', en: 'Unlike English, it agrees with the thing, not the owner: sa mère can be his mother or her mother.' },
+      ],
       tip: { zh: '跟被拥有的名词性数配合，不跟主人：sa mère 也可以是“他的妈妈”。阴性名词以元音开头时用 mon / ton / son：mon amie。', en: 'They agree with the thing owned, not the owner: sa mère can be “his mother”. Before a feminine noun starting with a vowel, use mon / ton / son: mon amie.' },
       words: [
         { fr: 'mon', zh: '我的（阳单）', en: 'my (masc. sing.)' },
@@ -139,6 +178,11 @@ FL.registerTopic({
     },
     {
       id: 'pronoms-possessifs', emoji: '', title: { fr: 'Pronoms possessifs', zh: '主有代词', en: 'Possessive pronouns' },
+      memo: [
+        { zh: '还是 m-t-s：mien / tien / sien；阴性加 -ne 并双写 n：mienne, tienne, sienne。', en: 'M-t-s again: mien / tien / sien; the feminine doubles the n and adds -ne: mienne, tienne, sienne.' },
+        { zh: '戴帽子（^）的是代词，不戴的是形容词：le nôtre / notre maison，le vôtre / votre maison。', en: 'With the hat (^) it’s the pronoun, without it the adjective: le nôtre / notre maison, le vôtre / votre maison.' },
+        { zh: '“他们的”最省事：leur 前面加冠词就好：le leur, la leur, les leurs。', en: '“Theirs” is the easiest: put an article in front of leur: le leur, la leur, les leurs.' },
+      ],
       tip: { zh: '主有代词 = 定冠词 + 主有形式，替代“主有形容词 + 名词”：mon livre → le mien。nôtre、vôtre 有长音符，notre、votre 没有。', en: 'Possessive pronoun = definite article + possessive form, replacing “possessive + noun”: mon livre → le mien. Nôtre and vôtre have a circumflex; notre and votre do not.' },
       words: [
         { fr: 'le mien', zh: '我的（阳单）', en: 'mine (masc. sing.)' },

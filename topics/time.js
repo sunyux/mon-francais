@@ -13,6 +13,10 @@ FL.registerTopic({
   groups: [
     {
       id: 'annee', emoji: '📅', title: { fr: "L'année", zh: '年', en: 'The year' },
+      memo: [
+        { zh: '短的词数“个”，长的词说“整段”：deux ans（两年，数数）；toute l\'année（一整年）。同样的配对还有 jour / journée、matin / matinée、soir / soirée。', en: 'Short word to count, long word for the whole stretch: deux ans (two years); toute l\'année (the whole year). Same pairs: jour / journée, matin / matinée, soir / soirée.' },
+        { zh: 'tous les ans 里是数数，所以用短的 an；cette année 说的是这一整年，所以用长的 année。', en: 'Tous les ans counts, so it takes the short an; cette année is the whole year, so the long année.' },
+      ],
       tip: { zh: 'en + 年份：en 2026', en: 'en + year: en 2026' },
       words: [
         { fr: "l'année (f.)", zh: '年；年份', en: 'year' },
@@ -24,6 +28,10 @@ FL.registerTopic({
     },
     {
       id: 'saisons', emoji: '🌸', title: { fr: 'Les saisons', zh: '季节', en: 'Seasons' },
+      memo: [
+        { zh: '四个季节都是阳性。只有 printemps 以辅音开头，所以只有它用 au；été、automne、hiver 以元音或哑音 h 开头，都用 en。', en: 'All four seasons are masculine. Only printemps starts with a consonant, so only it takes au; été, automne, hiver start with a vowel or mute h and take en.' },
+        { zh: '联想英语：été → estival（夏季的），automne → autumn，hiver → hibernate（冬眠），printemps = prin（第一）+ temps（时间），一年的“第一段时光”。', en: 'English links: été → estival, automne → autumn, hiver → hibernate, printemps = prin (first) + temps (time), the year’s first season.' },
+      ],
       tip: { zh: '只有春天用 au printemps，其余用 en：en été, en automne, en hiver', en: 'Only spring takes “au”: au printemps; the rest take “en”' },
       words: [
         { fr: 'le printemps', zh: '春天', en: 'spring' },
@@ -38,6 +46,11 @@ FL.registerTopic({
     },
     {
       id: 'mois', emoji: '🗓️', title: { fr: 'Les mois', zh: '月份', en: 'Months' },
+      memo: [
+        { zh: '月份和英语几乎一样，去掉英语词尾就像法语：January → janvier，March → mars，July → juillet。都小写、都是阳性。', en: 'Months are close to English with the ending changed: January → janvier, March → mars, July → juillet. Lower case, all masculine.' },
+        { zh: 'sept-、oct-、nov-、déc- 其实是 7、8、9、10（sept, huit/octo, neuf/novem, dix/decem）。古罗马历从三月开始，所以差了两个月。', en: 'Sept-, oct-, nov-, déc- mean 7, 8, 9, 10 (sept, octo, novem, decem). The Roman year began in March, hence the two-month shift.' },
+        { zh: 'août 只读一个音：/u/ 或 /ut/，a 不发音。', en: 'Août is one sound: /u/ or /ut/; the a is silent.' },
+      ],
       tip: { zh: '月份小写。en + 月份 / au mois de + 月份：en mai = au mois de mai', en: 'Months are lowercase. en mai = au mois de mai (in May)' },
       words: [
         { fr: 'janvier', zh: '一月', en: 'January' },
@@ -57,6 +70,11 @@ FL.registerTopic({
     },
     {
       id: 'semaine', emoji: '📆', title: { fr: 'Les jours de la semaine', zh: '星期', en: 'Days of the week' },
+      memo: [
+        { zh: '每个都以 -di 结尾 = 拉丁语 dies（日子）。前半是星球或神：lundi 月亮（Lune），mardi 火星（Mars），mercredi 水星（Mercure），jeudi 木星（Jupiter），vendredi 金星（Vénus）。', en: 'Each ends in -di, from Latin dies (day). The first half is a planet or god: lundi the Moon (Lune), mardi Mars, mercredi Mercury, jeudi Jupiter, vendredi Venus.' },
+        { zh: '周末两个例外：samedi 来自 Sabbat（安息日），dimanche 来自 dies Dominicus（主日）。', en: 'The weekend breaks the pattern: samedi from the Sabbath, dimanche from dies Dominicus (the Lord’s day).' },
+        { zh: '英语 Monday 也是 Moon day，法语 lundi 也是月亮日：一一对应地记。', en: 'Monday is also Moon day, like lundi: learn them in pairs.' },
+      ],
       tip: { zh: '星期小写。lundi = 这个周一；le lundi = 每个周一', en: 'Lowercase. lundi = this Monday; le lundi = every Monday' },
       words: [
         { fr: 'lundi', zh: '星期一', en: 'Monday' },
@@ -72,6 +90,11 @@ FL.registerTopic({
     },
     {
       id: 'date', emoji: '📌', title: { fr: 'La date', zh: '日期', en: 'The date' },
+      memo: [
+        { zh: '日期顺序跟中文相反：先日、再月、再年：le 3 octobre 2026。', en: 'Day, then month, then year, the reverse of Chinese: le 3 octobre 2026.' },
+        { zh: '只有 1 号特殊（premier），其余都是普通数字：就像“初一”特殊。', en: 'Only the 1st is special (premier); every other day is a plain number.' },
+        { zh: 'aujourd\'hui = au jour d\'hui，hui 本身就是“今天”，这个词其实说了两遍“今天”。demain 来自 de mane（从早晨起），也就是“明早”。', en: 'Aujourd\'hui = au jour d\'hui; hui already meant “today”, so the word says today twice. Demain comes from de mane (“from morning”).' },
+      ],
       tip: { zh: 'le + 数字 + 月份。1号用序数词 premier：le premier mai', en: 'le + number + month. The 1st uses “premier”: le premier mai' },
       words: [
         { fr: 'la date', zh: '日期', en: 'date' },
@@ -84,6 +107,11 @@ FL.registerTopic({
     },
     {
       id: 'journee', emoji: '🌤️', title: { fr: 'La journée', zh: '一天中的时段', en: 'Times of day' },
+      memo: [
+        { zh: '又是短与长：le jour / la journée，le matin / la matinée，le soir / la soirée。-ée 结尾的都是阴性，表示“整段时间”。', en: 'Short and long again: le jour / la journée, le matin / la matinée, le soir / la soirée. The -ée words are feminine and mean the whole stretch.' },
+        { zh: '拆开就懂：midi = mi（中间）+ di（日），minuit = mi + nuit（夜）。après-midi = 中午之后。', en: 'Take them apart: midi = mi (middle) + di (day), minuit = mi + nuit (night). Après-midi = after noon.' },
+        { zh: 'demi = 一半（像 demi-tasse），quart = 四分之一（像 quarter）。', en: 'Demi = half (as in demitasse), quart = a quarter.' },
+      ],
       tip: { zh: 'le soir = 晚上（时间点）；la soirée = 整个晚上的时段 / 晚会', en: 'le soir = evening (point in time); la soirée = the whole evening / a party' },
       words: [
         { fr: 'la journée', zh: '一天；白天', en: 'the day (daytime)' },
@@ -104,6 +132,11 @@ FL.registerTopic({
     },
     {
       id: 'adverbes', emoji: '⏳', title: { fr: 'Les adverbes de temps', zh: '时间副词', en: 'Time words' },
+      memo: [
+        { zh: '三个词就能组合出九种说法：ce（这）/ prochain（下）/ dernier（上）× semaine / mois / année。', en: 'Three words make nine phrases: ce (this) / prochain (next) / dernier (last) × semaine / mois / année.' },
+        { zh: 'prochain 和 proche（近的）同源：靠近的下一个。dernier 就是“最后一个”，刚过去的那一个。', en: 'Prochain shares a root with proche (near): the next one along. Dernier means “last”: the one just gone.' },
+        { zh: 'tard → 英语 tardy（迟到的）；tôt 加上 bien 就是 bientôt（很快）。', en: 'Tard → English tardy; tôt with bien gives bientôt (soon).' },
+      ],
       tip: { zh: 'ce/cet/cette 这… · prochain(e) 下… · dernier/dernière 上…', en: 'ce/cet/cette = this · prochain(e) = next · dernier/dernière = last' },
       words: [
         { fr: 'maintenant', zh: '现在', en: 'now' },

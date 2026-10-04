@@ -21,6 +21,10 @@ FL.registerTopic({
   groups: [
     {
       id: 'zero-dix', emoji: '', title: { fr: 'De zéro à dix', zh: '零到十', en: 'Zero to ten' },
+      memo: [
+        { zh: '和英语、拉丁语是亲戚：deux → duo，trois → trio，quatre → quarter，sept → September，dix → decimal。', en: 'Cousins of English and Latin: deux → duo, trois → trio, quatre → quarter, sept → September, dix → decimal.' },
+        { zh: 'cinq、six、sept、huit、neuf、dix 单独说时词尾要读出来；放在名词前，six、huit、dix 的尾音常常不发音（six livres）。', en: 'Cinq, six, sept, huit, neuf, dix sound their last letter alone; before a noun six, huit, dix usually drop it (six livres).' },
+      ],
       tip: { zh: 'six、dix 单独说时读 /s/；在辅音前不发音（six livres）；在元音前读 /z/（dix ans）。', en: 'Six and dix end in /s/ alone, are silent before a consonant (six livres) and sound /z/ before a vowel (dix ans).' },
       words: [
         { fr: 'zéro', zh: '0 零', en: '0 zero' },
@@ -38,6 +42,10 @@ FL.registerTopic({
     },
     {
       id: 'onze-vingt', emoji: '', title: { fr: 'De onze à vingt', zh: '十一到二十', en: 'Eleven to twenty' },
+      memo: [
+        { zh: '11–16 全部以 -ze 结尾，并且藏着 1–6：onze←un，douze←deux，treize←trois，quatorze←quatre，quinze←cinq，seize←six。', en: '11–16 all end in -ze and hide 1–6: onze←un, douze←deux, treize←trois, quatorze←quatre, quinze←cinq, seize←six.' },
+        { zh: '从 17 开始改用加法：dix-sept = 10 + 7，dix-huit = 10 + 8，dix-neuf = 10 + 9。', en: 'From 17 French switches to adding: dix-sept = 10 + 7, dix-huit = 10 + 8, dix-neuf = 10 + 9.' },
+      ],
       tip: { zh: '11–16 是独立的词；17、18、19 = dix + 7/8/9，中间加连字符。', en: '11–16 are words of their own; 17, 18, 19 = dix + 7/8/9, with a hyphen.' },
       words: [
         { fr: 'onze', zh: '11 十一', en: '11 eleven' },
@@ -54,6 +62,10 @@ FL.registerTopic({
     },
     {
       id: 'dizaines', emoji: '', title: { fr: 'Les dizaines, de 20 à 69', zh: '二十到六十九', en: 'Tens, 20 to 69' },
+      memo: [
+        { zh: '整十都是“数字 + -ante”：trente←trois，quarante←quatre，cinquante←cinq，soixante←six。只有 vingt 例外。', en: 'The tens are “digit + -ante”: trente←trois, quarante←quatre, cinquante←cinq, soixante←six. Only vingt is different.' },
+        { zh: '“et un” 只出现在个位是 1 的时候（21、31、41、51、61，还有 71）；其他都用连字符。', en: '“Et un” appears only when the unit is 1 (21, 31, 41, 51, 61, and 71); everything else takes a hyphen.' },
+      ],
       tip: { zh: '21、31、41、51、61 用 et un；其他都用连字符：vingt-deux, trente-cinq。', en: '21, 31, 41, 51, 61 use “et un”; all others take a hyphen: vingt-deux, trente-cinq.' },
       words: [
         { fr: 'vingt et un', zh: '21 二十一', en: '21 twenty-one' },
@@ -70,6 +82,11 @@ FL.registerTopic({
     },
     {
       id: 'soixante-dix', emoji: '', title: { fr: 'De 70 à 99', zh: '七十到九十九', en: '70 to 99' },
+      memo: [
+        { zh: '把它当成算式来念：70 = 60 + 10，71 = 60 + 11，80 = 4 × 20，90 = 4 × 20 + 10。看图里的蓝棍和粉棍。', en: 'Read it as a sum: 70 = 60 + 10, 71 = 60 + 11, 80 = 4 × 20, 90 = 4 × 20 + 10. Look at the blue and rose sticks in the pictures.' },
+        { zh: '所以 71 是 soixante et onze（因为 60 + 11），而 81 没有 et：quatre-vingt-un。', en: 'So 71 is soixante et onze (60 + 11), while 81 has no et: quatre-vingt-un.' },
+        { zh: 'quatre-vingts 只有在后面什么都不跟的时候才有 s：二十“们”凑满了才加 s。', en: 'Quatre-vingts keeps its s only when nothing follows it.' },
+      ],
       tip: { zh: '70 = 60 + 10（soixante-dix）；80 = 4 × 20（quatre-vingts）；90 = 4 × 20 + 10。80 有 s，81 起去掉 s，也不用 et。比利时和瑞士说 septante（70）、nonante（90）。', en: '70 = 60 + 10; 80 = 4 × 20; 90 = 4 × 20 + 10. 80 has an s, which drops from 81 on, and there is no “et”. Belgium and Switzerland say septante (70) and nonante (90).' },
       words: [
         { fr: 'soixante-dix', zh: '70 七十（60 + 10）', en: '70 seventy (60 + 10)' },
@@ -86,6 +103,11 @@ FL.registerTopic({
     },
     {
       id: 'grands', emoji: '', title: { fr: 'Les grands nombres', zh: '大数字', en: 'Big numbers' },
+      memo: [
+        { zh: 'cent 被乘而且在最后时加 s（deux cents），后面再跟数字就不加（deux cent un）。mille 永远不加 s。', en: 'Cent takes an s when multiplied and last (deux cents), not when more follows (deux cent un). Mille never takes an s.' },
+        { zh: 'million、milliard 是名词，所以会加 s（deux millions），后面跟名词要加 de：un million d\'étoiles。', en: 'Million and milliard are nouns, so they take an s (deux millions) and need de before a noun: un million d\'étoiles.' },
+        { zh: '小心：milliard = 英语的 billion（十亿）；法语的 billion 是一万亿。', en: 'Careful: milliard = English billion (10⁹); French billion is a trillion.' },
+      ],
       tip: { zh: 'cents 只在末尾加 s（deux cents，但 deux cent un）；mille 永远不加 s；million、milliard 是名词，要加 s（deux millions）。法语用空格分千位：1 000 000，小数点用逗号：2,5。', en: 'Cents takes an s only at the end (deux cents but deux cent un); mille never does; million and milliard are nouns and do (deux millions). French separates thousands with spaces (1 000 000) and uses a comma for decimals (2,5).' },
       words: [
         { fr: 'cent', zh: '100 一百', en: '100 a hundred', note: { zh: '不说 un cent', en: 'not “un cent”' } },
@@ -102,6 +124,11 @@ FL.registerTopic({
     },
     {
       id: 'ordinaux', emoji: '', title: { fr: 'Les ordinaux en -ième', zh: '序数词 -ième', en: 'Ordinals in -ième' },
+      memo: [
+        { zh: '规律：基数词 + -ième（≈ 英语 -th）。去掉词尾 e：quatre → quatrième。', en: 'Rule: cardinal + -ième (≈ English -th). Drop a final e: quatre → quatrième.' },
+        { zh: '只有三个要小心：cinq → cinquième（加 u），neuf → neuvième（f 变 v），un → premier / première（完全不同）。', en: 'Only three to watch: cinq → cinquième (add u), neuf → neuvième (f becomes v), un → premier / première (a word of its own).' },
+        { zh: '缩写看最后的字母：1er、1re、2e、3e……', en: 'Abbreviations keep the last letters: 1er, 1re, 2e, 3e…' },
+      ],
       tip: { zh: '数字 + ième：去掉末尾的 e（quatre → quatrième），cinq 加 u（cinquième），neuf 的 f 变 v（neuvième）。只有 1 特殊：premier / première。写法：1er、2e、3e。', en: 'Number + ième: drop a final e (quatre → quatrième), cinq adds u (cinquième), neuf turns f into v (neuvième). Only 1 is special: premier / première. Written 1er, 2e, 3e.' },
       words: [
         { fr: 'premier', zh: '第一（阳）1er', en: 'first (m.) 1st', alt: ['première'] },
@@ -119,6 +146,11 @@ FL.registerTopic({
     },
     {
       id: 'calcul', emoji: '', title: { fr: 'Le calcul', zh: '加减乘除', en: 'Arithmetic' },
+      memo: [
+        { zh: '四个运算名词都是阴性，而且和英语拼写一样：une addition, une soustraction, une multiplication, une division。', en: 'The four operation nouns are feminine and spelled almost like English: une addition, une soustraction, une multiplication, une division.' },
+        { zh: 'fois = 次，一次 = une fois，所以“乘”就是“几次”：trois fois deux = 三次二。', en: 'Fois means “time(s)”: une fois = once, so times is literally “three times two”.' },
+        { zh: 'égale → equal，le double → double，la moitié ← mi（中间、一半，和 midi 的 mi 一样）。', en: 'Égale → equal, le double → double, la moitié ← mi (half, the same mi as in midi).' },
+      ],
       tip: { zh: '说结果可以用 égale（等于），也可以用 font：Deux plus trois égale cinq / font cinq。', en: 'Give the result with “égale” or “font”: deux plus trois égale cinq / font cinq.' },
       words: [
         { fr: 'plus', zh: '加 +', en: 'plus +', note: { zh: '算数时 s 发音', en: 'the s is pronounced in sums' } },
@@ -137,6 +169,11 @@ FL.registerTopic({
     },
     {
       id: 'mots', emoji: '', title: { fr: 'Les mots pour compter', zh: '和数字有关的词', en: 'Words for counting' },
+      memo: [
+        { zh: '三个“数”别混：un chiffre = 数字符号（0–9，像 cipher），un nombre = 数量（像 number），un numéro = 编号（电话、房间号，像 No.）。', en: 'Three “numbers”: un chiffre = a digit (0–9, cf. cipher), un nombre = a quantity, un numéro = a label (phone, room, cf. No.).' },
+        { zh: 'compter ↔ English count / compute，都是“算”。le prix ↔ price，l\'âge ↔ age，l\'étage = 楼层（étage = “一层层”）。', en: 'Compter ↔ count / compute. Le prix ↔ price, l\'âge ↔ age, l\'étage = floor (a layer).' },
+        { zh: 'centime 来自 cent（一百）：一欧元的百分之一。', en: 'Centime comes from cent (a hundred): one hundredth of a euro.' },
+      ],
       tip: { zh: 'nombre = 数量／数；chiffre = 数字符号（0–9）；numéro = 编号（电话、房间、门牌）。', en: 'nombre = a number (amount); chiffre = a digit (0–9); numéro = a number used as a label (phone, room, house).' },
       words: [
         { fr: 'compter', zh: '数；计算', en: 'to count' },
