@@ -22,7 +22,7 @@
 
   const load = src => new Promise((res, rej) => {
     const s = document.createElement('script');
-    s.src = src + '?v=25'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
+    s.src = src + '?v=26'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
     document.head.appendChild(s);
   });
   meta.scripts.reduce((p, s) => p.then(() => load(s)), Promise.resolve())
@@ -147,7 +147,11 @@
       </div>
       <p class="pg-sub">${FL.m(g.title)}</p>
       <ul class="words">${g.words.map(w => wordRow(w, g.id, d.id)).join('')}</ul>
-      ${g.tip ? `<p class="tip">${FL.m(g.tip)}</p>` : ''}`, { title: T }), { left: g === d.groups[0] }));
+      ${g.tip ? `<p class="tip">${FL.m(g.tip)}</p>` : ''}
+      ${g.memo && g.memo.length ? `<aside class="memo">
+        <h3 class="memo-h"><span lang="fr">Pour retenir</span> <small>${B('记忆窍门', 'Memory hooks')}</small></h3>
+        <ul>${g.memo.map(x => `<li>${FL.m(x)}</li>`).join('')}</ul>
+      </aside>` : ''}`, { title: T }), { left: g === d.groups[0] }));
 
     /* 3. rules */
     (d.rules || []).forEach((r, i) => add('regles', mkPage('regles', `
