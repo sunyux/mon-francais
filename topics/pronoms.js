@@ -333,6 +333,15 @@ FL.registerTopic({
 
   widgets: ['miroir'],
   quizExtras: ['pronoms'],
+  levels: [
+    { id: 'l1', title: { fr: 'Sujets et toniques', zh: '主语和重读代词', en: 'Subject and stressed' }, groups: ['sujets', 'toniques'] },
+    { id: 'l2', title: { fr: 'Objets directs et indirects', zh: '直接和间接宾语', en: 'Direct and indirect objects' }, groups: ['cod', 'coi'] },
+    { id: 'l3', title: { fr: 'Y, en et les indéfinis', zh: 'y / en 和泛指代词', en: 'Y, en and indefinites' }, groups: ['y-en', 'indefinis'],
+      extra: { gen: 'pronoms', label: { zh: '练习本里的填空', en: 'Workbook blanks' }, chapter: 'cahier' } },
+    { id: 'l4', title: { fr: 'Les démonstratifs', zh: '指示词', en: 'Demonstratives' }, groups: ['demonstratifs', 'adj-demonstratifs'] },
+    { id: 'l5', title: { fr: 'Les possessifs', zh: '主有词', en: 'Possessives' }, groups: ['adj-possessifs', 'pronoms-possessifs'],
+      extra: { gen: 'pronoms', label: { zh: '练习本里的填空', en: 'Workbook blanks' }, chapter: 'cahier' } },
+  ],
 
   proverbs: [
     { fr: 'Chacun son goût.', zh: '各有所好。', en: 'To each their own.' },

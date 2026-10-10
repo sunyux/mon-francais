@@ -22,7 +22,7 @@
 
   const load = src => new Promise((res, rej) => {
     const s = document.createElement('script');
-    s.src = src + '?v=26'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
+    s.src = src + '?v=28'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
     document.head.appendChild(s);
   });
   meta.scripts.reduce((p, s) => p.then(() => load(s)), Promise.resolve())
@@ -31,6 +31,7 @@
 
   const CHAPTERS = [
     { id: 'ouverture', fr: 'Ouverture', zh: '开篇', en: 'Opening', color: '#7e2a22' },
+    { id: 'voyage', fr: 'Voyage', zh: '闯关', en: 'Levels', color: '#3e5a8a' },
     { id: 'vocabulaire', fr: 'Vocabulaire', zh: '词汇', en: 'Words', color: '#9a7431' },
     { id: 'regles', fr: 'Règles', zh: '规则', en: 'Rules', color: '#4f6f5f' },
     { id: 'questions', fr: 'Questions', zh: '问句', en: 'Questions', color: '#5b4a6e' },
@@ -85,7 +86,10 @@
     const add = (cid, el, opts = {}) => { pages.push({ el, chapter: cid, ...opts }); return el; };
 
     /* 1. opening: the topic's little world rises out of the book */
-    const world = meta.world || { fr: d.title.fr, zh: d.title.zh, en: d.title.en, ground: '#e8cfa2', shade: '#a2835a', props: [] };
+    const world = { ...(meta.world || { fr: d.title.fr, zh: d.title.zh, en: d.title.en, ground: '#e8cfa2', shade: '#a2835a', props: [] }) };
+    const leveled = !!(d.levels && FL.Levels);
+    if (leveled) world.paint = FL.Levels.paint(d.id);
+    const vocabPages = {};
     const op = d.opening || {};
     const floaters = op.floaters || [];
     PROVERBS = d.proverbs || DEFAULT_PROVERBS;
@@ -139,8 +143,33 @@
       },
     });
 
+    /* 1b. the voyage: levels that paint the world, and mark the chapters you have mastered */
+    const markMastered = () => {
+      const st = FL.Levels.load(d.id);
+      const done = new Set((d.levels || []).filter(l => st.passed.final || st.passed[l.id]).flatMap(l => l.groups));
+      Object.entries(vocabPages).forEach(([gid, el]) => {
+        el.classList.toggle('is-mastered', done.has(gid));
+        el.classList.toggle('is-sketch', !done.has(gid));
+      });
+    };
+    if (leveled) {
+      const mapPg = mkPage('voyage', `
+        <h2><span lang="fr">Le voyage</span></h2>
+        <p class="pg-sub">${B('一关一关，给星球上色', 'Level by level, paint the world')}</p>
+        <div data-lvmap></div>`, { title: T });
+      const stagePg = mkPage('voyage', '<div data-lvstage></div>', { title: T });
+      add('voyage', mapPg, { left: true });
+      add('voyage', stagePg, { ownKeys: true });
+      FL.Levels.mount(mapPg.querySelector('[data-lvmap]'), stagePg.querySelector('[data-lvstage]'), d, {
+        onProgress: p => { world.paint = p; if (planetView) planetView.repaint(world); markMastered(); },
+        review: (kind, id) => (kind === 'group' ? FL.Book.showPage(vocabPages[id]) : document.querySelector(`.tabs [data-chap="${id}"]`).click()),
+        showStage: () => FL.Book.showPage(stagePg),
+      });
+    }
+
     /* 2. vocabulary: one page per group */
-    d.groups.forEach(g => add('vocabulaire', mkPage('vocabulaire', `
+    d.groups.forEach(g => add('vocabulaire', vocabPages[g.id] = mkPage('vocabulaire', `
+      <div class="seal" aria-hidden="true"><span lang="fr">Maîtrisé</span></div>
       <div class="pg-title-row">
         <h2><span class="pg-emoji">${g.emoji}</span> <span lang="fr">${esc(g.title.fr)}</span></h2>
         <button type="button" class="btn small" data-playall="${g.id}">▶ ${B('全部朗读', 'Play all')}</button>
@@ -253,6 +282,7 @@
     add('controle', ex, { wide: true, ownKeys: true });
 
     // page numbers + verb marking
+    if (leveled) markMastered();
     pages.forEach((p, i) => {
       const f = p.el.querySelector('.pg-foot');
       if (f) f.textContent = i + 1;
@@ -272,7 +302,7 @@
     const coverArt = FL.planetPoster(world);
     main.innerHTML = '<div class="book-mount"></div>';
     FL.Book.mount(main.querySelector('.book-mount'), {
-      chapters: [...CHAPTERS.slice(0, 5), ...widgetChapters(), ...CHAPTERS.slice(5)].filter(c => pages.some(p => p.chapter === c.id)),
+      chapters: [...CHAPTERS.slice(0, 6), ...widgetChapters(), ...CHAPTERS.slice(6)].filter(c => pages.some(p => p.chapter === c.id)),
       pages,
       filler: () => {
         const p = PROVERBS[proverbI++ % PROVERBS.length];
