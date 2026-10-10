@@ -86,7 +86,8 @@
       const x = cx + Math.sin(rad) * (R - 2), y = cy - Math.cos(rad) * (R - 2);
       return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${a.toFixed(1)}) scale(${s})">${PROP_ART[type] || ''}</g>`;
     }).join('');
-    return `<svg viewBox="0 0 300 300" class="planet-poster" role="img" aria-label="${FL.esc(world.fr)}">
+    const pf = world.paint ? world.paint.f : 1;
+    return `<svg viewBox="0 0 300 300" class="planet-poster" ${pf < 1 ? `style="filter:grayscale(${(1 - pf * 0.8).toFixed(2)}) contrast(.92)"` : ''} role="img" aria-label="${FL.esc(world.fr)}">
       <defs>
         <filter id="${id}e" x="-15%" y="-15%" width="130%" height="130%">
           <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="${posterN}" result="n"/>
@@ -365,6 +366,8 @@
         }, 1100);
       }
       FL.Book.open = openBook;
+      // jump to the spread holding a given page (used by the level Bilan's "review this page")
+      FL.Book.showPage = el => openBook(() => turnTo(spreads.findIndex(s => [s.left, s.right, s.single, s.wide].some(p => p && p.el === el))));
       const cover = root.querySelector('.cover');
       cover.addEventListener('click', e => { if (!e.target.closest('a')) openBook(); });
       cover.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openBook(); } });

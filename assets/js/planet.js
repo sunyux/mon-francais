@@ -80,8 +80,17 @@ function hullMat(t) {
   hullCache.set(t, m);
   return m;
 }
+// a world not yet learned is a pencil sketch: colours fade to graphite on paper
+let PENCIL = 0;
+function pencil(hex) {
+  if (PENCIL <= 0) return hex;
+  const c = new THREE.Color(hex);
+  const l = c.r * 0.3 + c.g * 0.59 + c.b * 0.11;
+  const v = 0.5 + l * 0.42;
+  return '#' + c.lerp(new THREE.Color(v, v * 0.985, v * 0.955), PENCIL).getHexString();
+}
 function inked(geo, color, shadow, t = 0.012, scale) {
-  const mesh = new THREE.Mesh(geo, wash(color, shadow, scale));
+  const mesh = new THREE.Mesh(geo, wash(pencil(color), pencil(shadow), scale));
   mesh.add(new THREE.Mesh(geo, hullMat(t)));
   return mesh;
 }
@@ -320,6 +329,16 @@ const PROPS = {
     k.userData.say = 'keeper';
     return k;
   },
+  baobab() {
+    const g = new THREE.Group();
+    const stem = inked(new THREE.CylinderGeometry(0.008, 0.012, 0.12, 6), '#6f8f5a', '#3f5a33', 0.004);
+    stem.position.y = 0.06; g.add(stem);
+    [[-1, 0.9], [1, 0.7]].forEach(([s, k]) => {
+      const leaf = inked(new THREE.SphereGeometry(0.03, 10, 8), '#8fae7a', '#4f6f47', 0.004);
+      leaf.scale.set(1.5 * k, 0.45, 0.8 * k); leaf.position.set(s * 0.035, 0.11 + (s > 0 ? 0.02 : 0), 0); leaf.rotation.z = s * -0.5; g.add(leaf);
+    });
+    return g;
+  },
   starfloat() {
     const g = new THREE.Group();
     const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.26, 4), new THREE.MeshBasicMaterial({ color: '#8a7f9a' }));
@@ -358,14 +377,25 @@ function noiseSphere(r, detail) {
   geo.computeVertexNormals();
   return geo;
 }
+// the people who live on the worlds come alive last
+const KEEPERS = new Set(['keeper', 'counter', 'dame']);
 function buildWorld(world, detail = 5) {
   const planet = new THREE.Group();
+  // paint: { f: 0 pencil … 1 colour, alive, sprouts }; no paint means full colour
+  const p = world.paint || { f: 1, alive: true, sprouts: 0 };
+  PENCIL = p.f > 0 ? 0.45 * (1 - p.f) : 1;
   const ball = inked(noiseSphere(1, detail), world.ground, world.shade, 0.022, 1.6);
   ball.userData.ball = true;
   planet.add(ball);
-  (world.props || []).forEach(([type, lat, lon, s = 1]) => {
+  const things = (world.props || []).filter(([type]) => !KEEPERS.has(type)).length;
+  let k = 0;
+  const sprouts = Array.from({ length: Math.min(6, p.sprouts || 0) }, (_, i) => ['baobab', 18 + ((i * 37) % 40), 20 + i * 61, 1]);
+  [...(world.props || []), ...sprouts].forEach(([type, lat, lon, s = 1]) => {
     if (!PROPS[type]) return;
+    const lit = type === 'baobab' || (KEEPERS.has(type) ? p.alive : k++ < Math.round(p.f * things));
+    PENCIL = lit ? 0 : 1;
     const obj = PROPS[type]();
+    PENCIL = 0;
     const phi = (90 - lat) * DEG, th = lon * DEG;
     const n = new THREE.Vector3(Math.sin(phi) * Math.cos(th), Math.cos(phi), Math.sin(phi) * Math.sin(th));
     obj.position.copy(n).multiplyScalar(0.985);
@@ -400,9 +430,16 @@ function single(el, world, { onPick } = {}) {
   const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 50);
   camera.position.set(0, 0.35, 6.2);
   camera.lookAt(0, 0.25, 0);
-  const planet = buildWorld(world);
+  let planet = buildWorld(world);
   planet.position.y = 0.05;
   scene.add(planet);
+  // repaint after a level: rebuild the world, keep how it was turned
+  const repaint = w => {
+    const next = buildWorld(w);
+    next.rotation.copy(planet.rotation); next.position.copy(planet.position);
+    scene.remove(planet); scene.add(next); planet = next;
+    if (!raf) renderer.render(scene, camera);
+  };
 
   const size = () => {
     const w = el.clientWidth || 300, h = el.clientHeight || 300;
@@ -463,7 +500,7 @@ function single(el, world, { onPick } = {}) {
   const resume = () => { if (!raf) { t0 = performance.now(); raf = requestAnimationFrame(loop); } };
   resume();
   el.classList.add('has-planet');
-  return { resume };
+  return { resume, repaint };
 }
 
 /* ---------- the home sky: every topic is a little world ---------- */

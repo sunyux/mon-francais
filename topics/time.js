@@ -274,6 +274,14 @@ FL.registerTopic({
 
   widgets: ['clock'],
   quizExtras: ['clock'],
+  levels: [
+    { id: 'l1', title: { fr: "L'année et les saisons", zh: '年与季节', en: 'Years and seasons' }, groups: ['annee', 'saisons'] },
+    { id: 'l2', title: { fr: 'Les mois', zh: '月份', en: 'The months' }, groups: ['mois'] },
+    { id: 'l3', title: { fr: 'La semaine et la date', zh: '星期和日期', en: 'Week and date' }, groups: ['semaine', 'date'] },
+    { id: 'l4', title: { fr: 'Les moments du jour', zh: '一天的时段', en: 'Times of day' }, groups: ['journee'] },
+    { id: 'l5', title: { fr: "Quelle heure est-il ?", zh: '看钟说时间', en: 'Telling the time' }, groups: ['adverbes'],
+      extra: { gen: 'clock', label: { zh: '看钟说时间', en: 'Telling the time' }, chapter: 'horloge' } },
+  ],
 
   /* ---------- 5. story ---------- */
   story: {

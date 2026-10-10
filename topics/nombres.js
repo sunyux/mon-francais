@@ -302,6 +302,15 @@ FL.registerTopic({
 
   widgets: ['stars'],
   quizExtras: ['nombres'],
+  levels: [
+    { id: 'l1', title: { fr: 'De zéro à vingt', zh: '0 到 20', en: 'Zero to twenty' }, groups: ['zero-dix', 'onze-vingt'] },
+    { id: 'l2', title: { fr: 'De vingt à soixante-neuf', zh: '21 到 69', en: '21 to 69' }, groups: ['dizaines'] },
+    { id: 'l3', title: { fr: 'De soixante-dix à quatre-vingt-dix-neuf', zh: '70 到 99', en: '70 to 99' }, groups: ['soixante-dix'],
+      extra: { gen: 'nombres', label: { zh: '听写数字和计算', en: 'Number dictation and sums' }, chapter: 'compteur' } },
+    { id: 'l4', title: { fr: 'Les grands nombres et les ordinaux', zh: '大数和序数', en: 'Big numbers and ordinals' }, groups: ['grands', 'ordinaux'] },
+    { id: 'l5', title: { fr: 'Calculer et demander', zh: '计算和问数字', en: 'Sums and asking' }, groups: ['calcul', 'mots'],
+      extra: { gen: 'nombres', label: { zh: '听写数字和计算', en: 'Number dictation and sums' }, chapter: 'compteur' } },
+  ],
 
   proverbs: [
     { fr: 'Jamais deux sans trois.', zh: '事不过三（好事坏事都成三）。', en: 'Things come in threes.' },

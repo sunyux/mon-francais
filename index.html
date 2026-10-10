@@ -13,25 +13,26 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="assets/css/style.css?v=26">
-  <link rel="stylesheet" href="assets/css/book.css?v=26">
-  <link rel="stylesheet" href="assets/css/aquarelle.css?v=26">
+  <link rel="stylesheet" href="assets/css/style.css?v=28">
+  <link rel="stylesheet" href="assets/css/book.css?v=28">
+  <link rel="stylesheet" href="assets/css/aquarelle.css?v=28">
   <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }</script>
 </head>
 <body class="home">
   <a class="skip-link" href="#main">Aller au contenu</a>
   <header id="site-header"></header>
   <main id="main"></main>
-  <script src="assets/js/core.js?v=26"></script>
-  <script src="assets/js/verbs.js?v=26"></script>
-  <script src="topics/index.js?v=26"></script>
-  <script src="assets/js/book.js?v=26"></script>
+  <script src="assets/js/core.js?v=28"></script>
+  <script src="assets/js/verbs.js?v=28"></script>
+  <script src="topics/index.js?v=28"></script>
+  <script src="assets/js/levels.js?v=28"></script>
+  <script src="assets/js/book.js?v=28"></script>
   <script>
     (function () {
       const B = FL.bi, esc = FL.esc;
       FL.renderHeader('home');
       FL.renderRoom();
-      const worlds = FL.TOPICS.filter(t => t.world).map(t => ({ ...t.world, id: t.id, ready: !!t.ready, topic: t }));
+      const worlds = FL.TOPICS.filter(t => t.world).map(t => ({ ...t.world, id: t.id, ready: !!t.ready, topic: t, paint: t.ready && FL.Levels ? FL.Levels.paint(t.id) : { f: 0, alive: false, sprouts: 0 } }));
       const main = document.getElementById('main');
       main.innerHTML = `
         <section class="sky" aria-labelledby="sky-title">
@@ -41,6 +42,13 @@
             <h1 id="sky-title" lang="fr">Un livre,<br>des petits mondes.</h1>
             <p class="sky-sub">${B('每个主题是一颗小星球，每颗星球有它自己的书。', 'Each topic is a small planet, and each planet has its own book.')}</p>
             <p class="sky-hint">${B('点一颗星球，打开它的书', 'Choose a planet to open its book')}</p>
+            ${(() => {
+              const rd = FL.TOPICS.filter(t => t.ready), done = rd.filter(t => FL.Levels && FL.Levels.load(t.id).passed.final).length;
+              const open = done === rd.length;
+              return `<a class="sky-final ${open ? 'is-open' : ''}" href="dictee.html">
+                <span lang="fr">${FL.store.get('dictee:finished', false) ? 'Le livre est à toi ✦' : 'La dictée du livre'}</span>
+                <small>${open ? B('所有星球都上色了：最后一关已经打开', 'Every world is painted: the last journey is open') : B(`最后一关：全部星球上色后开启（${done} / ${rd.length}）`, `The last journey opens when every world is painted (${done} / ${rd.length})`)}</small></a>`;
+            })()}
           </div>
           <ol class="sky-labels">${worlds.map(w => `
             <li><a class="world-label ${w.ready ? '' : 'soon'}" data-world="${w.id}" href="${w.ready ? `topic.html?t=${w.id}` : '#'}" ${w.ready ? '' : 'aria-disabled="true"'}>
@@ -69,6 +77,6 @@
       });
     })();
   </script>
-  <script type="module" src="assets/js/planet.js?v=26"></script>
+  <script type="module" src="assets/js/planet.js?v=28"></script>
 </body>
 </html>
