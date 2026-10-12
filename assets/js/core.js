@@ -181,6 +181,7 @@
         <nav class="hdr-nav">
           <a href="${root}index.html" class="${active === 'home' ? 'on' : ''}">${FL.bi('主题', 'Topics')}</a>
           <a href="${root}verbs.html" class="${active === 'verbs' ? 'on' : ''}">${FL.bi('动词变位', 'Verbs')}</a>
+          <a href="${root}outils.html" class="${active === 'outils' ? 'on' : ''}">${FL.bi('工具箱', 'Tools')}</a>
         </nav>
         <div class="hdr-tools">
           <div class="seg" role="group" aria-label="Language mode">

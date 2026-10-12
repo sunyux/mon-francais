@@ -259,6 +259,8 @@
   FL.verbs = {
     list: () => Object.keys(VERBS),
     get: conj,
+    // any conjugated form (vais, lisons, finirai…) → its infinitive, or undefined
+    find: form => INDEX[String(form).toLowerCase()],
     TENSES,
     // full 4-tense grid, used on the verbs page and topic pages
     tableHTML(key) {
