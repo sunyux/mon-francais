@@ -26,28 +26,38 @@ const NOISE = `
 
 const LIGHT = new THREE.Vector3(-0.55, 0.75, 0.6).normalize();
 const matCache = new Map();
-// a wash: uneven pigment, darker where it pools at the rim, paper grain on top
-function wash(color, shadow, scale = 2.6) {
-  const key = `${color}|${shadow}|${scale}`;
-  if (matCache.has(key)) return matCache.get(key);
+// shared by every material that is being painted right now: how far the colour has run, and from where
+const BLEED = { uBleed: { value: -1 }, uOrigin: { value: new THREE.Vector3(0, 1, 0) } };
+// a wash: uneven pigment, darker where it pools at the rim, paper grain on top.
+// pencil 0…1 fades it to graphite on paper (a world not yet learned).
+// While a level paints the world, uFrom → uTo runs outward from uOrigin as a wet edge.
+function wash(color, shadow, scale = 2.6, pencil = 0, bleed = null) {
+  const key = `${color}|${shadow}|${scale}|${pencil}`;
+  if (!bleed && matCache.has(key)) return matCache.get(key);
   const m = new THREE.ShaderMaterial({
     uniforms: {
       uColor: { value: new THREE.Color(color) },
       uShadow: { value: new THREE.Color(shadow) },
       uLight: { value: LIGHT },
       uScale: { value: scale },
+      uPencil: { value: pencil },
+      uFrom: { value: bleed ? bleed.from : pencil },
+      uBleed: bleed ? BLEED.uBleed : { value: -1 },
+      uOrigin: BLEED.uOrigin,
     },
     vertexShader: `
-      varying vec3 vN; varying vec3 vVN; varying vec3 vP;
+      varying vec3 vN; varying vec3 vVN; varying vec3 vP; varying vec3 vW;
       void main(){
         vN = normalize(mat3(modelMatrix) * normal);
         vVN = normalize(normalMatrix * normal);
         vP = position;
+        vW = (modelMatrix * vec4(position, 1.0)).xyz;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }`,
     fragmentShader: NOISE + `
       uniform vec3 uColor; uniform vec3 uShadow; uniform vec3 uLight; uniform float uScale;
-      varying vec3 vN; varying vec3 vVN; varying vec3 vP;
+      uniform float uPencil; uniform float uFrom; uniform float uBleed; uniform vec3 uOrigin;
+      varying vec3 vN; varying vec3 vVN; varying vec3 vP; varying vec3 vW;
       void main(){
         float l = dot(normalize(vN), uLight) * 0.5 + 0.5;
         float n = fbm(vP * uScale);
@@ -55,22 +65,42 @@ function wash(color, shadow, scale = 2.6) {
         vec3 col = mix(uShadow, uColor, w);
         float rim = 1.0 - abs(normalize(vVN).z);
         col = mix(col, uShadow * 0.82, smoothstep(0.5, 1.0, rim) * 0.5);
+        // pencil: graphite on paper, how much depends on how far this part has been learned
+        float amt = uPencil, edge = 0.0;
+        if (uBleed >= 0.0) {
+          float d = distance(vW, uOrigin) + (fbm(vW * 4.0) - 0.5) * 0.55;
+          float reveal = 1.0 - smoothstep(uBleed - 0.28, uBleed, d);
+          amt = mix(uFrom, uPencil, reveal);
+          edge = smoothstep(uBleed - 0.3, uBleed - 0.08, d) * (1.0 - smoothstep(uBleed - 0.08, uBleed + 0.02, d));
+        }
+        float g = 0.5 + dot(col, vec3(0.3, 0.59, 0.11)) * 0.42;
+        col = mix(col, vec3(g, g * 0.985, g * 0.955), amt);
+        col *= 1.0 - edge * 0.35 * abs(uFrom - uPencil); // the wet edge where the pigment pools
         col *= 0.94 + 0.06 * noise(vP * 46.0);
         gl_FragColor = vec4(col, 1.0);
         #include <colorspace_fragment>
       }`,
   });
-  matCache.set(key, m);
+  if (!bleed) matCache.set(key, m);
   return m;
 }
 // ink outline: the back faces, pushed out along the normal
 const hullCache = new Map();
+const BOIL = { value: 0 };
+// hand animation runs "on twos": about twelve drawings a second, not sixty
+const onTwos = now => Math.floor(now / 1000 * 12);
+const boil = now => { BOIL.value = Math.floor(now / 1000 * 6) % 3; };
 function hullMat(t) {
   if (hullCache.has(t)) return hullCache.get(t);
   const m = new THREE.ShaderMaterial({
     side: THREE.BackSide,
-    uniforms: { uT: { value: t }, uInk: { value: INK } },
-    vertexShader: `uniform float uT; void main(){ gl_Position = projectionMatrix * modelViewMatrix * vec4(position + normal * uT, 1.0); }`,
+    uniforms: { uT: { value: t }, uInk: { value: INK }, uBoil: BOIL },
+    // "line boil": each drawing of the outline is a little different, like hand-drawn frames
+    vertexShader: `uniform float uT; uniform float uBoil;
+      void main(){
+        float j = fract(sin(dot(position, vec3(12.9898, 78.233, 37.719)) * 43.7 + uBoil * 2.31) * 1.7);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position + normal * uT * (0.65 + 0.7 * j), 1.0);
+      }`,
     fragmentShader: `uniform vec3 uInk;
       void main(){
         gl_FragColor = vec4(uInk, 1.0);
@@ -80,17 +110,11 @@ function hullMat(t) {
   hullCache.set(t, m);
   return m;
 }
-// a world not yet learned is a pencil sketch: colours fade to graphite on paper
+// how much of what is being built is still pencil (set by buildWorld around each prop)
 let PENCIL = 0;
-function pencil(hex) {
-  if (PENCIL <= 0) return hex;
-  const c = new THREE.Color(hex);
-  const l = c.r * 0.3 + c.g * 0.59 + c.b * 0.11;
-  const v = 0.5 + l * 0.42;
-  return '#' + c.lerp(new THREE.Color(v, v * 0.985, v * 0.955), PENCIL).getHexString();
-}
 function inked(geo, color, shadow, t = 0.012, scale) {
-  const mesh = new THREE.Mesh(geo, wash(pencil(color), pencil(shadow), scale));
+  const mesh = new THREE.Mesh(geo, wash(color, shadow, scale, PENCIL));
+  mesh.userData.wash = [color, shadow, scale];
   mesh.add(new THREE.Mesh(geo, hullMat(t)));
   return mesh;
 }
@@ -379,30 +403,55 @@ function noiseSphere(r, detail) {
 }
 // the people who live on the worlds come alive last
 const KEEPERS = new Set(['keeper', 'counter', 'dame']);
-function buildWorld(world, detail = 5) {
-  const planet = new THREE.Group();
-  // paint: { f: 0 pencil … 1 colour, alive, sprouts }; no paint means full colour
-  const p = world.paint || { f: 1, alive: true, sprouts: 0 };
-  PENCIL = p.f > 0 ? 0.45 * (1 - p.f) : 1;
-  const ball = inked(noiseSphere(1, detail), world.ground, world.shade, 0.022, 1.6);
-  ball.userData.ball = true;
-  planet.add(ball);
+// paint: { f: 0 pencil … 1 colour, alive, sprouts }; no paint means full colour.
+// Returns the pencil amount of the ball and of each prop, in order.
+function pencilPlan(world, paint) {
+  const p = paint || { f: 1, alive: true };
   const things = (world.props || []).filter(([type]) => !KEEPERS.has(type)).length;
   let k = 0;
-  const sprouts = Array.from({ length: Math.min(6, p.sprouts || 0) }, (_, i) => ['baobab', 18 + ((i * 37) % 40), 20 + i * 61, 1]);
-  [...(world.props || []), ...sprouts].forEach(([type, lat, lon, s = 1]) => {
+  return {
+    ball: p.f > 0 ? Math.round(0.45 * (1 - p.f) * 100) / 100 : 1,
+    props: (world.props || []).map(([type]) => (KEEPERS.has(type) ? p.alive : k++ < Math.round(p.f * things)) ? 0 : 1),
+  };
+}
+const sproutSpot = i => ['baobab', 18 + ((i * 37) % 40), 20 + i * 61, 1];
+function placeOn(obj, lat, lon, s) {
+  const phi = (90 - lat) * DEG, th = lon * DEG;
+  const n = new THREE.Vector3(Math.sin(phi) * Math.cos(th), Math.cos(phi), Math.sin(phi) * Math.sin(th));
+  obj.position.copy(n).multiplyScalar(0.985);
+  obj.quaternion.setFromUnitVectors(UP, n);
+  obj.scale.setScalar(s);
+  obj.userData.normal = n;
+}
+function buildWorld(world, detail = 5, prevPaint = null) {
+  const planet = new THREE.Group();
+  const plan = pencilPlan(world, world.paint);
+  const before = prevPaint ? pencilPlan(world, prevPaint) : plan;
+  PENCIL = plan.ball;
+  const ball = inked(noiseSphere(1, detail), world.ground, world.shade, 0.022, 1.6);
+  ball.userData.ball = true;
+  ball.userData.pencil = [before.ball, plan.ball];
+  planet.add(ball);
+  (world.props || []).forEach(([type, lat, lon, s = 1], i) => {
     if (!PROPS[type]) return;
-    const lit = type === 'baobab' || (KEEPERS.has(type) ? p.alive : k++ < Math.round(p.f * things));
-    PENCIL = lit ? 0 : 1;
+    PENCIL = plan.props[i];
     const obj = PROPS[type]();
     PENCIL = 0;
-    const phi = (90 - lat) * DEG, th = lon * DEG;
-    const n = new THREE.Vector3(Math.sin(phi) * Math.cos(th), Math.cos(phi), Math.sin(phi) * Math.sin(th));
-    obj.position.copy(n).multiplyScalar(0.985);
-    obj.quaternion.setFromUnitVectors(UP, n);
-    obj.scale.setScalar(s);
+    obj.userData.type = type;
+    obj.userData.pencil = [before.props[i], plan.props[i]];
+    placeOn(obj, lat, lon, s);
     planet.add(obj);
   });
+  const sprouts = Math.min(6, (world.paint && world.paint.sprouts) || 0);
+  for (let i = 0; i < sprouts; i++) {
+    const [type, lat, lon, s] = sproutSpot(i);
+    const obj = PROPS[type]();
+    obj.userData.type = type;
+    obj.userData.sprout = i;
+    placeOn(obj, lat, lon, s);
+    planet.add(obj);
+  }
+  PENCIL = 0;
   planet.rotation.x = 0.28;
   return planet;
 }
@@ -433,13 +482,63 @@ function single(el, world, { onPick } = {}) {
   let planet = buildWorld(world);
   planet.position.y = 0.05;
   scene.add(planet);
-  // repaint after a level: rebuild the world, keep how it was turned
-  const repaint = w => {
-    const next = buildWorld(w);
-    next.rotation.copy(planet.rotation); next.position.copy(planet.position);
-    scene.remove(planet); scene.add(next); planet = next;
+  // repaint after a level: the colour runs out from the character's feet like wet watercolour,
+  // and pulled baobab sprouts lift off and drift away. It plays the next time the world is on screen.
+  let anim = null;
+  const repaint = (w, prev) => {
+    const old = planet;
+    const next = buildWorld(w, 5, prev);
+    next.rotation.copy(old.rotation); next.position.copy(old.position);
+    const keep = Math.min(6, (w.paint && w.paint.sprouts) || 0);
+    old.updateMatrixWorld(true);
+    const leaving = old.children.filter(c => c.userData.sprout != null && c.userData.sprout >= keep);
+    scene.remove(old); scene.add(next); planet = next;
+    const painting = [];
+    if (prev && !reduced()) next.children.forEach(c => {
+      const [from, to] = c.userData.pencil || [0, 0];
+      if (from === to) return;
+      c.traverse(m => {
+        if (!m.userData.wash) return;
+        const [col, sh, sc] = m.userData.wash;
+        m.userData.still = m.material;
+        m.material = wash(col, sh, sc, to, { from });
+        painting.push(m);
+      });
+    });
+    const flying = reduced() ? [] : leaving.map(o => {
+      const dir = o.userData.normal.clone().applyQuaternion(old.quaternion);
+      scene.attach(o);
+      return { o, p0: o.position.clone(), dir, s0: o.scale.x, r0: o.rotation.z };
+    });
+    const keeper = next.children.find(c => KEEPERS.has(c.userData.type));
+    anim = painting.length || flying.length ? { start: null, painting, flying, keeper } : null;
     if (!raf) renderer.render(scene, camera);
   };
+  const ease = k => 1 - Math.pow(1 - k, 3);
+  function step(now) {
+    if (anim.start == null) anim.start = now;
+    const t = onTwos(now - anim.start) / 12; // on twos, like hand animation
+    // the paint: a wet edge spreading from the character (or the top of the world)
+    if (anim.painting.length) {
+      (anim.keeper || planet).getWorldPosition(BLEED.uOrigin.value);
+      if (!anim.keeper) BLEED.uOrigin.value.y += 1;
+      const k = Math.min(1, t / 3.4);
+      BLEED.uBleed.value = k * k * (3 - 2 * k) * 2.8; // slow start, slow finish, like pigment soaking in
+    }
+    // the sprouts: pulled up, a turn or two, then gone
+    anim.flying.forEach(f => {
+      const k = Math.min(1, t / 1.8);
+      f.o.position.copy(f.p0).addScaledVector(f.dir, ease(k) * 1.1).add(new THREE.Vector3(Math.sin(k * 7) * 0.06, 0, 0));
+      f.o.rotation.z = f.r0 + k * 5;
+      f.o.scale.setScalar(f.s0 * (1 + k * 0.4) * (1 - k * k));
+    });
+    if (t > 3.5) {
+      anim.painting.forEach(m => { m.material.dispose(); m.material = m.userData.still; });
+      anim.flying.forEach(f => scene.remove(f.o));
+      BLEED.uBleed.value = -1;
+      anim = null;
+    }
+  }
 
   const size = () => {
     const w = el.clientWidth || 300, h = el.clientHeight || 300;
@@ -494,6 +593,8 @@ function single(el, world, { onPick } = {}) {
     planet.rotation.x += (0.28 + spinX - planet.rotation.x) * dt * 3;
     planet.position.y = 0.05 + Math.sin(now / 1400) * 0.03;
     clockFaces.forEach(f => drawClock(f));
+    if (anim) step(now);
+    boil(now);
     renderer.render(scene, camera);
     if (!reduced()) raf = requestAnimationFrame(loop);
   };
@@ -501,6 +602,53 @@ function single(el, world, { onPick } = {}) {
   resume();
   el.classList.add('has-planet');
   return { resume, repaint };
+}
+
+/* ---------- a hand-drawn star: a little five-point star, inked, with a pale wash ---------- */
+function inkStar() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const g = c.getContext('2d');
+  g.translate(32, 32);
+  g.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const a = (i * Math.PI) / 5 - Math.PI / 2 + (Math.random() - 0.5) * 0.12, r = (i % 2 ? 9 : 22) * (0.92 + Math.random() * 0.16);
+    g.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+  }
+  g.closePath();
+  g.fillStyle = '#f6e3a3'; g.fill();
+  g.lineWidth = 3; g.strokeStyle = '#2b2436'; g.lineJoin = 'round'; g.stroke();
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+// stars sampled from hand-lettered text, each joined to its nearest neighbour with a pencil line
+function letteredStars(text, tex) {
+  const c = document.createElement('canvas');
+  c.width = 900; c.height = 160;
+  const g = c.getContext('2d');
+  g.font = 'italic 600 120px "Cormorant Garamond", Georgia, serif';
+  g.textBaseline = 'middle';
+  g.fillText(text, 10, 80);
+  const data = g.getImageData(0, 0, c.width, c.height).data;
+  const pts = [];
+  for (let y = 0; y < c.height; y += 9) for (let x = 0; x < c.width; x += 9) {
+    if (data[(y * c.width + x) * 4 + 3] > 140 && Math.random() < 0.55) pts.push([x + (Math.random() - 0.5) * 4, y + (Math.random() - 0.5) * 4]);
+  }
+  const k = 9 / c.width; // 9 world units wide
+  const pos = pts.map(([x, y]) => new THREE.Vector3(x * k - 4.5, -(y - 80) * k, 0));
+  const lines = [];
+  pos.forEach((p, i) => {
+    let best = -1, bd = 0.32;
+    pos.forEach((q, j) => { if (j > i) { const d = p.distanceTo(q); if (d < bd) { bd = d; best = j; } } });
+    if (best >= 0) lines.push(p, pos[best]);
+  });
+  const group = new THREE.Group();
+  group.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lines),
+    new THREE.LineBasicMaterial({ color: '#c9b98a', transparent: true, opacity: 0.45 })));
+  group.add(new THREE.Points(new THREE.BufferGeometry().setFromPoints(pos),
+    new THREE.PointsMaterial({ size: 0.16, map: tex, transparent: true, depthWrite: false, alphaTest: 0.05 })));
+  return group;
 }
 
 /* ---------- the home sky: every topic is a little world ---------- */
@@ -516,9 +664,13 @@ function universe(el, worlds, { onOpen, labelsEl } = {}) {
   const pts = [];
   for (let i = 0; i < 260; i++) pts.push((Math.random() - 0.5) * 40, (Math.random() - 0.5) * 24, -6 - Math.random() * 10);
   starGeo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
-  const starTex = glow('#fff1c8', 1).material.map;
-  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 0.22, map: starTex, transparent: true, depthWrite: false, opacity: 0.9 }));
+  const starTex = inkStar();
+  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 0.3, map: starTex, transparent: true, depthWrite: false, opacity: 0.9, alphaTest: 0.05 }));
   scene.add(stars);
+  // every world painted: the stars draw "Le Petit Prince" in the sky, joined by pencil lines
+  const allPainted = worlds.filter(w => w.ready).every(w => w.paint && w.paint.f >= 1);
+  const constellation = allPainted ? letteredStars('Le Petit Prince', starTex) : null;
+  if (constellation) scene.add(constellation);
 
   // the worlds sit on a gentle arc; the first (ready) one is the largest
   const items = worlds.map((w, i) => {
@@ -626,7 +778,17 @@ function universe(el, worlds, { onOpen, labelsEl } = {}) {
       it.planet.position.y = it.base.y + Math.sin(tt * 0.6 + it.phase) * 0.08;
       it.planet.scale.setScalar(it.s * (1 + it.hover * 0.05));
     });
-    stars.material.opacity = 0.75 + Math.sin(tt * 1.3) * 0.15;
+    // twinkle on twos, like a hand-drawn loop of three drawings
+    const f = onTwos(now) % 3;
+    stars.material.opacity = [0.95, 0.75, 0.85][f];
+    stars.material.size = [0.3, 0.27, 0.32][f];
+    if (constellation) {
+      const halfH = Math.tan((camera.fov / 2) * DEG) * (camera.position.z + 5);
+      // high across the top of the sky, centred, above the worlds
+      constellation.position.set(halfH * camera.aspect * 0.06, halfH * 0.8, -5);
+      constellation.scale.setScalar(Math.min(1.25, camera.aspect * 0.85));
+    }
+    boil(now);
     if (flying) {
       flying.t = Math.min(1, flying.t + dt * 0.9);
       const e = flying.t * flying.t * (3 - 2 * flying.t);

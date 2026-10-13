@@ -182,7 +182,7 @@
       locked = true;
       const q = qs[qi];
       const ok = k === q.answer;
-      if (ok) score++;
+      if (ok) { score++; if (FL.correct) FL.correct(); }
       body.querySelectorAll('.q-opt').forEach((b, j) => {
         b.disabled = true;
         if (j === q.answer) b.classList.add('right');
@@ -320,6 +320,7 @@
     function success() {
       done = true;
       stats.ok++;
+      if (FL.correct) FL.correct();
       fb.innerHTML = `<span class="ok">✓ <span lang="fr">Exact.</span></span> <span lang="fr" class="ans">${FL.esc(target)}</span>`;
       tgt.classList.add('win');
       FL.speak(target, { onend: () => setTimeout(() => { tgt.classList.remove('win'); if (done) next(); }, 350) });

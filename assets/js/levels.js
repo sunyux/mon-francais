@@ -201,6 +201,7 @@
         right.querySelectorAll('.q-opt').forEach((b, k) => { b.disabled = true; b.classList.toggle('right', k === q.answer); b.classList.toggle('wrong', k === given && !ok); });
       }
       r.res.push({ q, ok, accent, typed });
+      if (ok && FL.correct) FL.correct();
       const fr = q.w ? clean(q.w.fr) : '';
       right.querySelector('.lv-after').innerHTML = `
         <p class="lv-fb ${ok ? 'is-ok' : 'is-no'}">${ok ? (accent ? B('对了，但注意重音：', 'Right, but mind the accents:') : B('对了！', 'Right!')) : B('正确答案：', 'The answer:')}
@@ -221,7 +222,7 @@
       const r = run, n = r.qs.length;
       const score = r.res.filter(x => x.ok).length;
       const pass = score / n >= PASS, perfect = score === n;
-      const before = paint(d.id).f;
+      const beforeP = paint(d.id), before = beforeP.f;
       // baobabs: a miss plants (or replants) one; a right answer on a new day helps pull it out
       r.res.forEach(x => {
         if (!x.q.w) return;
@@ -281,6 +282,7 @@
             ${wrong.filter(x => x.q.w).length ? `<button type="button" class="btn primary" data-lv="retry">${B(`只练错题（${wrong.filter(x => x.q.w).length}）`, `Practise the mistakes (${wrong.filter(x => x.q.w).length})`)}</button>` : ''}
             ${r.mode === 'level' ? `<button type="button" class="btn ${pass ? 'ghost' : 'primary'}" data-lv="again">${B('再挑战一次', 'Try again')}</button>` : `<button type="button" class="btn ghost" data-lv="back">${B('回到这一关', 'Back to the level')}</button>`}
             ${r.mode === 'level' && pass && nextLevel ? `<button type="button" class="btn primary" data-lv="start" data-id="${nextLevel.id}">${B('下一关', 'Next level')} →</button>` : ''}
+            ${after.f > before || after.sprouts < beforeP.sprouts ? `<button type="button" class="btn ghost" data-review="chapter" data-id="ouverture">✦ ${after.f > before ? B('去看星球上色', 'Watch the world being painted') : B('去看树苗被拔掉', 'Watch the sprouts go')}</button>` : ''}
           </div>
         </div>`;
       run.done = true;

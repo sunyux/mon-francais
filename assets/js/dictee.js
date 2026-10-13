@@ -27,7 +27,7 @@
 
   const load = src => new Promise((res, rej) => {
     const s = document.createElement('script');
-    s.src = src + '?v=31'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
+    s.src = src + '?v=35'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
     document.head.appendChild(s);
   });
   ready.flatMap(t => t.scripts).reduce((p, s) => p.then(() => load(s)), Promise.resolve())
@@ -100,7 +100,7 @@
       const inp = main.querySelector('.dt-input');
       inp.disabled = true; inp.classList.add(ok ? 'is-ok' : 'is-no');
       page.queue.shift();
-      if (ok) { if (!st.done.includes(w.key)) st.done.push(w.key); page.ok++; }
+      if (ok) { if (!st.done.includes(w.key)) st.done.push(w.key); page.ok++; if (FL.correct) FL.correct(); }
       else { st.miss[w.key] = (st.miss[w.key] || 0) + 1; page.queue.push(w); if (!page.missed.includes(w)) page.missed.push(w); }
       save();
       main.querySelector('.lv-after').innerHTML = `

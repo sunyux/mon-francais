@@ -161,15 +161,117 @@
       const pool = own.length >= 3 ? own : (await FL.bookLookupAll()).map(w => w.fr);
       setTarget(FL.cleanFr(FL.pick(pool)));
     };
+    const glass = ripples(body.querySelector('.ot-glass'));
     const mic = body.querySelector('[data-ot="listen"]');
     mic.onclick = () => {
       mic.classList.add('is-listening');
       body.querySelector('.ot-verdict').innerHTML = `<p class="mi-verdict">${B('请说…', 'Speak now…')}</p>`;
+      if (glass) glass.listen();
       FL.mirror.listen(target, res => {
         mic.classList.remove('is-listening');
+        if (glass) glass.stop(res.level === 'perfect');
         body.querySelector('.ot-verdict').innerHTML = FL.mirror.verdict(res, target);
         if (res.heard) body.querySelector('.ot-history').insertAdjacentHTML('afterbegin', `<li class="is-${res.level}"><span lang="fr">${esc(res.heard)}</span></li>`);
       });
+    };
+  }
+
+  /* the mirror's surface: hand-drawn rings spread while you speak, louder voice, more rings;
+     a right answer washes the glass with gold watercolour. Drawn on twos, in ink, never a glow. */
+  function ripples(glass) {
+    if (!glass || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
+    const cv = document.createElement('canvas');
+    cv.className = 'ot-ripples';
+    cv.setAttribute('aria-hidden', 'true');
+    const gl = cv.getContext('webgl', { premultipliedAlpha: false });
+    if (!gl) return null;
+    glass.prepend(cv);
+    const fs = `precision mediump float;
+      uniform vec2 uRes; uniform float uFrame; uniform float uAmp; uniform float uGold; uniform float uRings;
+      float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+      float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+        return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y); }
+      void main(){
+        vec2 uv = gl_FragCoord.xy / uRes;
+        vec2 p = (uv - 0.5) * vec2(uRes.x / uRes.y, 1.0);
+        float d = length(p * vec2(0.85, 1.25));
+        float a = atan(p.y, p.x);
+        // paper-blue glass, an uneven wash
+        vec3 col = mix(vec3(0.93, 0.95, 0.97), vec3(0.79, 0.85, 0.92), noise(p * 4.0) * 0.7 + d * 0.5);
+        // a few inked rings; each drawing wobbles a little (line boil)
+        float ink = 0.0;
+        for (int i = 0; i < 5; i++) {
+          float fi = float(i);
+          if (fi >= uRings) break;
+          float r = fract(uFrame / 36.0 + fi / 5.0) * 0.62;
+          float wob = (noise(vec2(a * 3.0 + fi * 5.0, uFrame * 0.5)) - 0.5) * 0.018;
+          float line = 1.0 - smoothstep(0.003, 0.009 + uAmp * 0.006, abs(d - r - wob));
+          float broken = step(0.25, noise(vec2(a * 9.0 + fi, uFrame * 0.3)));
+          ink += line * broken * (1.0 - r / 0.62) * (0.45 + uAmp * 0.55);
+        }
+        col = mix(col, vec3(0.24, 0.3, 0.42), clamp(ink, 0.0, 1.0) * 0.75);
+        // the gold wash for Parfait, blotchy like pigment on wet paper
+        float gw = uGold * smoothstep(0.75, 0.2, d + (noise(p * 6.0 + uFrame * 0.05) - 0.5) * 0.3);
+        col = mix(col, vec3(0.93, 0.8, 0.45), gw * 0.7);
+        gl_FragColor = vec4(col, 1.0);
+      }`;
+    const sh = (t, src) => { const x = gl.createShader(t); gl.shaderSource(x, src); gl.compileShader(x); return x; };
+    const prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }'));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { cv.remove(); return null; }
+    gl.useProgram(prog);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const U = n => gl.getUniformLocation(prog, n);
+    let frame = 0, amp = 0, gold = 0, rings = 0, listening = false, timer = null, stream = null, ctx = null, an = null, buf = null;
+    function draw() {
+      if (!cv.isConnected) return stopMic();
+      const w = cv.clientWidth, h = cv.clientHeight;
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; gl.viewport(0, 0, w, h); }
+      if (an) {
+        an.getFloatTimeDomainData(buf);
+        let sum = 0; for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+        const lvl = Math.min(1, Math.sqrt(sum / buf.length) * 9);
+        amp += (lvl - amp) * 0.5;
+        if (amp > 0.12) rings = Math.min(5, rings + amp * 0.6);
+      } else if (listening) { rings = Math.max(rings, 2); } // no volume available: a calm two-ring pulse
+      else { amp *= 0.8; rings = Math.max(0, rings - 0.25); }
+      gold *= 0.965; // the gold soaks in slowly, then dries
+      gl.uniform2f(U('uRes'), w, h);
+      gl.uniform1f(U('uFrame'), frame++);
+      gl.uniform1f(U('uAmp'), Math.max(amp, rings > 0 ? 0.35 : 0));
+      gl.uniform1f(U('uRings'), Math.ceil(rings));
+      gl.uniform1f(U('uGold'), gold);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      const busy = an || listening || rings > 0.05 || gold > 0.02;
+      timer = busy ? setTimeout(draw, 1000 / 12) : null; // on twos
+    }
+    const kick = () => { if (!timer) draw(); };
+    function stopMic() {
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      if (ctx) ctx.close();
+      stream = ctx = an = null;
+    }
+    draw();
+    return {
+      async listen() {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          ctx = new (window.AudioContext || window.webkitAudioContext)();
+          an = ctx.createAnalyser(); an.fftSize = 1024;
+          buf = new Float32Array(an.fftSize);
+          ctx.createMediaStreamSource(stream).connect(an);
+        } catch (e) { stopMic(); }
+        listening = true;
+        rings = Math.max(rings, 2);
+        kick();
+      },
+      stop(perfect) { listening = false; stopMic(); if (perfect) gold = 1; kick(); },
     };
   }
 
