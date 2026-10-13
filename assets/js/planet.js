@@ -785,8 +785,8 @@ function universe(el, worlds, { onOpen, labelsEl } = {}) {
     if (constellation) {
       const halfH = Math.tan((camera.fov / 2) * DEG) * (camera.position.z + 5);
       // high across the top of the sky, centred, above the worlds
-      constellation.position.set(halfH * camera.aspect * 0.06, halfH * 0.8, -5);
-      constellation.scale.setScalar(Math.min(1.25, camera.aspect * 0.85));
+      constellation.position.set(halfH * camera.aspect * 0.12, halfH * 0.6, -5);
+      constellation.scale.setScalar(Math.min(1, camera.aspect * 0.68));
     }
     boil(now);
     if (flying) {
