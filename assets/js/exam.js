@@ -115,6 +115,7 @@
       q.correct = answers.some(a => FL.norm(a, false) === FL.norm(value, false));
       // right letters, wrong accents: counted, but flagged in the results
       if (!q.correct && value && answers.some(a => FL.norm(a, true) === FL.norm(value, true))) { q.correct = true; q.accentOnly = true; }
+      if (q.correct && FL.correct) FL.correct();
     }
     function submit(value) {
       grade(qs[qi], value.trim());

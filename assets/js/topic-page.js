@@ -22,7 +22,7 @@
 
   const load = src => new Promise((res, rej) => {
     const s = document.createElement('script');
-    s.src = src + '?v=31'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
+    s.src = src + '?v=36'; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src));
     document.head.appendChild(s);
   });
   meta.scripts.reduce((p, s) => p.then(() => load(s)), Promise.resolve())
@@ -161,7 +161,7 @@
       add('voyage', mapPg, { left: true });
       add('voyage', stagePg, { ownKeys: true });
       FL.Levels.mount(mapPg.querySelector('[data-lvmap]'), stagePg.querySelector('[data-lvstage]'), d, {
-        onProgress: p => { world.paint = p; if (planetView) planetView.repaint(world); markMastered(); },
+        onProgress: p => { const prev = world.paint; world.paint = p; if (planetView) planetView.repaint(world, prev); markMastered(); },
         review: (kind, id) => (kind === 'group' ? FL.Book.showPage(vocabPages[id]) : document.querySelector(`.tabs [data-chap="${id}"]`).click()),
         showStage: () => FL.Book.showPage(stagePg),
       });
