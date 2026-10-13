@@ -80,7 +80,7 @@
     if (bookWords) return bookWords;
     const load = src => new Promise(res => {
       const s = document.createElement('script');
-      s.src = src + '?v=31'; s.onload = res; s.onerror = res;
+      s.src = src + '?v=35'; s.onload = res; s.onerror = res;
       document.head.appendChild(s);
     });
     const ready = (FL.TOPICS || []).filter(t => t.ready);
