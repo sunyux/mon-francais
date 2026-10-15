@@ -77,6 +77,8 @@ function wash(color, shadow, scale = 2.6, pencil = 0, bleed = null) {
         col = mix(col, vec3(g, g * 0.985, g * 0.955), amt);
         col *= 1.0 - edge * 0.35 * abs(uFrom - uPencil); // the wet edge where the pigment pools
         col *= 0.94 + 0.06 * noise(vP * 46.0);
+        float gran = smoothstep(0.6, 0.92, noise(vP * 95.0)) * (1.2 - w);
+        col *= 1.0 - gran * 0.16 * (1.0 - amt * 0.7);
         gl_FragColor = vec4(col, 1.0);
         #include <colorspace_fragment>
       }`,
@@ -112,7 +114,7 @@ function hullMat(t) {
 }
 // how much of what is being built is still pencil (set by buildWorld around each prop)
 let PENCIL = 0;
-function inked(geo, color, shadow, t = 0.012, scale) {
+function inked(geo, color, shadow, t = 0.009, scale) {
   const mesh = new THREE.Mesh(geo, wash(color, shadow, scale, PENCIL));
   mesh.userData.wash = [color, shadow, scale];
   mesh.add(new THREE.Mesh(geo, hullMat(t)));
@@ -353,6 +355,17 @@ const PROPS = {
     k.userData.say = 'keeper';
     return k;
   },
+  tuft() {
+    const g = new THREE.Group();
+    const pts = [];
+    for (let i = 0; i < 5; i++) {
+      const x = (i - 2) * 0.012 + (Math.random() - 0.5) * 0.006, h = 0.035 + Math.random() * 0.035, lean = (i - 2) * 0.008 + (Math.random() - 0.5) * 0.01;
+      pts.push(new THREE.Vector3(x, 0, 0), new THREE.Vector3(x + lean * 0.5, h * 0.6, 0), new THREE.Vector3(x + lean * 0.5, h * 0.6, 0), new THREE.Vector3(x + lean, h, 0));
+    }
+    g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: INK })));
+    g.rotation.y = Math.random() * Math.PI;
+    return g;
+  },
   baobab() {
     const g = new THREE.Group();
     const stem = inked(new THREE.CylinderGeometry(0.008, 0.012, 0.12, 6), '#6f8f5a', '#3f5a33', 0.004);
@@ -428,7 +441,7 @@ function buildWorld(world, detail = 5, prevPaint = null) {
   const plan = pencilPlan(world, world.paint);
   const before = prevPaint ? pencilPlan(world, prevPaint) : plan;
   PENCIL = plan.ball;
-  const ball = inked(noiseSphere(1, detail), world.ground, world.shade, 0.022, 1.6);
+  const ball = inked(noiseSphere(1, detail), world.ground, world.shade, 0.016, 1.6);
   ball.userData.ball = true;
   ball.userData.pencil = [before.ball, plan.ball];
   planet.add(ball);
@@ -442,6 +455,11 @@ function buildWorld(world, detail = 5, prevPaint = null) {
     placeOn(obj, lat, lon, s);
     planet.add(obj);
   });
+  for (let i = 0; i < 14; i++) {
+    const t = PROPS.tuft();
+    placeOn(t, -10 + ((i * 53) % 85), (i * 97) % 360, 1);
+    planet.add(t);
+  }
   const sprouts = Math.min(6, (world.paint && world.paint.sprouts) || 0);
   for (let i = 0; i < sprouts; i++) {
     const [type, lat, lon, s] = sproutSpot(i);

@@ -42,7 +42,7 @@
     // a soft watercolor blot behind the drawing
     wash: (color = C.sky, cx = 32, cy = 34, r = 25) =>
       `<g filter="url(#fl-wash)" opacity=".45"><ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${r * 0.86}" fill="${color}"/></g>`,
-    ink: (inner, w = 1.6) => `<g filter="url(#fl-wob)" stroke="${INK}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${inner}</g>`,
+    ink: (inner, w = 1.3) => `<g filter="url(#fl-wob)" stroke="${INK}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${inner}</g>`,
     text: (x, y, t, { size = 11, fill = INK, italic = true, weight = 600, anchor = 'middle', font = 'Cormorant Garamond, Georgia, serif' } = {}) =>
       `<text x="${x}" y="${y}" text-anchor="${anchor}" font-family="${font}" font-size="${size}" font-weight="${weight}" ${italic ? 'font-style="italic"' : ''} fill="${fill}" stroke="none">${FL.esc(String(t))}</text>`,
 
