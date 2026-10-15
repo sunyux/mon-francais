@@ -842,3 +842,13 @@ body.home { overflow-x: hidden; }
 .meteor-sky { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 400; pointer-events: none; }
 .ot-glass { position: relative; overflow: hidden; isolation: isolate; }
 .ot-ripples { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; display: block; }
+
+/* ---------- painted art (see assets/img) ---------- */
+/* a little taller than the screen, so the painting's top row of stars sits above the header */
+.room { background: #1f2a4a url("../img/sky.jpg?v=1") center bottom / max(290vh, 100vw) auto no-repeat; }
+.room svg { transition: opacity .8s ease; }
+.room.painted svg { opacity: 0; }
+@media (max-aspect-ratio: 4/5) { .room { background-position: 72% bottom; } }
+.endpaper { background: #f3ecdc url("../img/endpaper.jpg?v=1") center / 384px repeat; }
+.page.is-mastered .seal { width: 78px; height: 78px; background: url("../img/seal.jpg?v=1") center / contain no-repeat; mix-blend-mode: multiply; box-shadow: none; border-radius: 0; transform: rotate(-9deg); }
+.page.is-mastered .seal span, .page.is-mastered .seal::after { display: none; }

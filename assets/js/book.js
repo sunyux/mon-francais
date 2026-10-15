@@ -55,6 +55,10 @@
       </g>
     </svg>`;
     document.body.prepend(room);
+    // the painted night (a real watercolour) replaces the drawn one once it has loaded
+    const sky = new Image();
+    sky.onload = () => room.classList.add('painted');
+    sky.src = 'assets/img/sky.jpg?v=1';
   };
 
   /* ---------- a watercolor portrait of a little world (covers, fallback, turning pages) ---------- */
